@@ -41,7 +41,8 @@ void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage,
 	currentHealth = FMath::Clamp(currentHealth - Damage, 0, maxHealth);
 	if (currentHealth == 0)
 	{
-		/// Call function "Dead"
+		UE_LOG(LogTemp, Warning, TEXT("%f"), currentHealth);
+		// Call function "Dead"
 	}
 }
 

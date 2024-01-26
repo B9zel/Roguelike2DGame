@@ -25,9 +25,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float deltaTime) override;
-
-
+	
 	
 	virtual void OnJumped_Implementation() override;
 
@@ -37,9 +35,15 @@ protected:
 
 	virtual void Dash();
 
-	virtual void ReloadDash();
+	virtual void OnStopDash();
+
+	virtual void OnReloadDash();
 
 	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
+
+	virtual void OnAttack() override;
+
+	virtual void OnAttackHit() override;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -59,12 +63,21 @@ protected:
 	class UInputAction* actionDash;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* actionAttack;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
+
 
 	UPROPERTY(EditAnywhere)
 	float powerDash;
-
+	UPROPERTY(EditAnywhere)
 	float timeDash; 
-	float isDashing;
+	UPROPERTY(EditAnywhere)
+	float reloadDash;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool isDashing;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool canDash;
 
 };

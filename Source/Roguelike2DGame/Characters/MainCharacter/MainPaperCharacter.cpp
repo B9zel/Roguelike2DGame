@@ -9,6 +9,8 @@
 #include <Camera/CameraComponent.h>
 #include <Components/InputComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/GameplayStatics.h>
 #include <Components/CapsuleComponent.h>
 #include <EnhancedInputComponent.h>
 #include <InputAction.h>
@@ -32,9 +34,12 @@ AMainPaperCharacter::AMainPaperCharacter()
 	
 	JumpMaxCount = 2;
 
-	powerDash = 1000;
-	timeDash = 0.2;
+	powerDash = 1000.f;
+	timeDash = 0.2f;
+	reloadDash = 0.1f;
 	isDashing = false;
+	canDash = true;
+
 }
 
 void AMainPaperCharacter::BeginPlay()
@@ -65,9 +70,12 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	UEnhancedInputComponent* enhuncedInput = Cast<UEnhancedInputComponent>(inputComponent);
 	
 	enhuncedInput->BindAction(actionRun, ETriggerEvent::Triggered, this, &AMainPaperCharacter::RightMove);
+
 	enhuncedInput->BindAction(actionJump, ETriggerEvent::Started, this, &AMainPaperCharacter::Jump);
 	enhuncedInput->BindAction(actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
+
 	enhuncedInput->BindAction(actionDash, ETriggerEvent::Started, this, &AMainPaperCharacter::Dash);
+	enhuncedInput->BindAction(actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
 }
 
 
@@ -81,11 +89,6 @@ void AMainPaperCharacter::OnWalkingOffLedge_Implementation(const FVector& Previo
 	OnJumped_Implementation();
 }
 
-void AMainPaperCharacter::Tick(float deltaTime)
-{
-	Super::Tick(deltaTime);
-
-}
 
 void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 {
@@ -105,10 +108,13 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 	}
 }
 
+
+
 void AMainPaperCharacter::Dash()
 {
-	if (!isDashing)
+	if (canDash)
 	{
+		canDash = false;
 		isDashing = true;
 
 		
@@ -119,17 +125,24 @@ void AMainPaperCharacter::Dash()
 		LaunchCharacter((GetActorForwardVector() * powerDash), false, false);
 
 		FTimerHandle handle;
-		GetWorld()->GetTimerManager().SetTimer(handle, this, &AMainPaperCharacter::ReloadDash, timeDash);
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &AMainPaperCharacter::OnStopDash, timeDash, false);
 	}
 }
 
-void AMainPaperCharacter::ReloadDash()
+void AMainPaperCharacter::OnStopDash()
 {
 	EnableInput(GetController<APlayerController>());
 	GetCharacterMovement()->Velocity = FVector(0.f);
 	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
 
 	isDashing = false;
+	FTimerHandle time;
+	GetWorld()->GetTimerManager().SetTimer(time, this, &AMainPaperCharacter::OnReloadDash, reloadDash, false);
+}
+
+void AMainPaperCharacter::OnReloadDash()
+{
+	canDash = true;
 }
 
 void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride)
@@ -137,4 +150,33 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 	Super::LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 
 	GetAnimationComponent()->GetAnimInstance()->JumpToNode("Dash");
+}
+
+
+
+
+void AMainPaperCharacter::OnAttack()
+{
+	if (canAttack)
+	{
+		canAttack = false;
+		isAttacking = true;
+		GetAnimationComponent()->GetAnimInstance()->JumpToNode("Punch");
+	}
+}
+
+void AMainPaperCharacter::OnAttackHit()
+{
+	TArray<AActor*> actorsIgnore;
+	TArray<FHitResult> res;
+	TSubclassOf<UDamageType> damageType;
+	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+
+
+	for (auto& el : res)
+	{
+		UGameplayStatics::ApplyDamage(el.GetActor(), damage, GetInstigatorController(), this, damageType);
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMainPaperCharacter::OnReloadAttack, timeReloadAttack, false);
 }
