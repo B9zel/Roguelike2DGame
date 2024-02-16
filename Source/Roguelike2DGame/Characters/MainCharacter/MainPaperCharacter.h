@@ -18,6 +18,8 @@ public:
 
 	AMainPaperCharacter();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool GetIsDashing();
 
 protected:
 
@@ -51,6 +53,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* cameraComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* niagaraSystem;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* niagaraComponent;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> dashParticle;
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -67,7 +76,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
-
+	
+	AActor* dashNiagara;
 
 	UPROPERTY(EditAnywhere)
 	float powerDash;

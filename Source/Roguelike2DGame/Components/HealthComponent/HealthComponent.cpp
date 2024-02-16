@@ -3,6 +3,8 @@
 
 #include "HealthComponent.h"
 #include "../../Characters/BasePaperCharacter.h"
+#include "../../GameModes/Game/MainGameMode.h"
+#include <Kismet/GameplayStatics.h>
 
 
 
@@ -17,6 +19,16 @@ UHealthComponent::UHealthComponent()
 	currentHealth = maxHealth;
 
 	isDead = false;
+}
+
+int32 UHealthComponent::GetCurrentHP()
+{
+	return currentHealth;
+}
+
+int32 UHealthComponent::GetMaxHP()
+{
+	return maxHealth;
 }
 
 
@@ -39,9 +51,12 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	currentHealth = FMath::Clamp(currentHealth - Damage, 0, maxHealth);
+	takeDamageDelegate.Broadcast(DamagedActor);
+	UE_LOG(LogTemp, Warning, TEXT("%f"), currentHealth);
 	if (currentHealth == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%f"), currentHealth);
+		Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->OnDeathActor(GetOwner());
+		
 		// Call function "Dead"
 	}
 }

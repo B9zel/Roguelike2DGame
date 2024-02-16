@@ -13,5 +13,12 @@ UCLASS()
 class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 {
 	GENERATED_BODY()
-	
+public:
+
+	AEnemyCharacter();
+
+protected:
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchDirectionX();
 };

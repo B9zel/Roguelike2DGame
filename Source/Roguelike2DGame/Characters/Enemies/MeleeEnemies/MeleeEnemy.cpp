@@ -5,10 +5,17 @@
 #include <PaperZDAnimationComponent.h>
 #include <PaperZDAnimInstance.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/BoxComponent.h>
 
 
 
 
+
+AMeleeEnemy::AMeleeEnemy()
+{
+	collisonBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
+	collisonBoxComponent->SetupAttachment(GetRootComponent());
+}
 
 void AMeleeEnemy::OnAttack()
 {
@@ -21,12 +28,18 @@ void AMeleeEnemy::OnAttackHit()
 	TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
-	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
-
-	for (auto& el : res)
+	if (UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true))
 	{
-		UGameplayStatics::ApplyDamage(el.GetActor(), damage, GetInstigatorController(), this, damageType);
+		for (auto& el : res)
+		{
+			UGameplayStatics::ApplyDamage(el.GetActor(), damage, GetInstigatorController(), this, damageType);
+		}
 	}
+}
+
+void AMeleeEnemy::OnEndAttack()
+{
+	Super::OnEndAttack();
 
 	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, timeReloadAttack, false);
 }

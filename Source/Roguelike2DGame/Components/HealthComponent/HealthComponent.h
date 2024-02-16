@@ -7,6 +7,9 @@
 #include "HealthComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthComponentDelegateOneParam, AActor*, instigatorDamage);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROGUELIKE2DGAME_API UHealthComponent : public UActorComponent
 {
@@ -15,6 +18,10 @@ class ROGUELIKE2DGAME_API UHealthComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetCurrentHP();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetMaxHP();
 
 protected:
 	// Called when the game starts
@@ -28,9 +35,14 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
-
+	UPROPERTY(EditAnywhere)
 	int maxHealth;
+	UPROPERTY(EditAnywhere)
 	int currentHealth;
 
 	bool isDead;
+
+public:
+
+	FHealthComponentDelegateOneParam takeDamageDelegate;
 };

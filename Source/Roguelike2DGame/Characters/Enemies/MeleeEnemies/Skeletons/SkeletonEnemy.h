@@ -18,5 +18,9 @@ protected:
 
 	virtual void OnAttack() override;
 
+	virtual void OnReloadAttack() override;
 
+	virtual void OnDeath(AActor* deadActor) override;
+
+	virtual void OnTakeDamage(AActor* instigatorDamage) override;
 };

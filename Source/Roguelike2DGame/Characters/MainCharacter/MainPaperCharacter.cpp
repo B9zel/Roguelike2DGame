@@ -15,9 +15,9 @@
 #include <EnhancedInputComponent.h>
 #include <InputAction.h>
 #include <EnhancedInputSubsystems.h>
-
-
-
+#include <NiagaraSystem.h>
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraComponent.h>
 
 
 
@@ -29,9 +29,10 @@ AMainPaperCharacter::AMainPaperCharacter()
 
 	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	cameraComponent->SetupAttachment(springArmComponent);
-
-	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
 	
+	
+	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
+
 	JumpMaxCount = 2;
 
 	powerDash = 1000.f;
@@ -42,10 +43,17 @@ AMainPaperCharacter::AMainPaperCharacter()
 
 }
 
+bool AMainPaperCharacter::GetIsDashing()
+{
+	return isDashing;
+}
+
 void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, GetRootComponent(), NAME_None, FVector(-20,0,0), FRotator(0), EAttachLocation::Type::SnapToTarget,false,false);
+	niagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
 	
 }
 
@@ -93,6 +101,7 @@ void AMainPaperCharacter::OnWalkingOffLedge_Implementation(const FVector& Previo
 void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 {
 	float scale = instance.GetValue().Get<float>();
+	
 	AddMovementInput(FVector(1,0,0), scale);
 
 	if (scale == 0)
@@ -116,8 +125,10 @@ void AMainPaperCharacter::Dash()
 	{
 		canDash = false;
 		isDashing = true;
-
 		
+		
+		niagaraComponent->Activate(false);
+
 		DisableInput(GetController<APlayerController>());
 		GetCharacterMovement()->GravityScale = 0.f;
 		GetCharacterMovement()->Velocity = GetActorForwardVector();
@@ -135,6 +146,7 @@ void AMainPaperCharacter::OnStopDash()
 	GetCharacterMovement()->Velocity = FVector(0.f);
 	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
 
+	//niagaraComponent->Deactivate();
 	isDashing = false;
 	FTimerHandle time;
 	GetWorld()->GetTimerManager().SetTimer(time, this, &AMainPaperCharacter::OnReloadDash, reloadDash, false);
@@ -157,11 +169,14 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 
 void AMainPaperCharacter::OnAttack()
 {
-	if (canAttack)
+	if (canAttack && !GetCharacterMovement()->IsFalling())
 	{
-		canAttack = false;
-		isAttacking = true;
-		GetAnimationComponent()->GetAnimInstance()->JumpToNode("Punch");
+		if (!isDashing)
+		{
+			canAttack = false;
+			isAttacking = true;
+			GetAnimationComponent()->GetAnimInstance()->JumpToNode("Punch");
+		}
 	}
 }
 

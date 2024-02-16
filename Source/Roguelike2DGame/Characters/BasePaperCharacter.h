@@ -6,9 +6,10 @@
 #include "PaperZDCharacter.h"
 #include "BasePaperCharacter.generated.h"
 
-/**
- * 
- */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegateWithoutParam);
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API ABasePaperCharacter : public APaperZDCharacter
 {
@@ -17,16 +18,31 @@ class ROGUELIKE2DGAME_API ABasePaperCharacter : public APaperZDCharacter
 public:
 
 	ABasePaperCharacter();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool GetIsAttacking();
+	UFUNCTION(BlueprintCallable)
+	void SetIsAttacking(bool attack);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	class UHealthComponent* GetHealthComponent();
 
 protected:
+
+	virtual void BeginPlay() override;
+
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnAttack();
 	UFUNCTION(BlueprintCallable)
 	virtual void OnAttackHit();
-
+	UFUNCTION(BlueprintCallable)
 	virtual void OnReloadAttack();
+	UFUNCTION(BlueprintCallable)
+	virtual void OnEndAttack();
+	UFUNCTION()
+	virtual void OnTakeDamage(AActor* instigatorDamage);
 
+	UFUNCTION()
+	virtual void OnDeath(AActor* deadActor);
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -47,4 +63,10 @@ protected:
 	TArray<TEnumAsByte<EObjectTypeQuery>> targetEnums;
 
 	FTimerHandle attackReloadTimer;
+
+public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FBaseCharacterDelegateWithoutParam endAttack;
+	UPROPERTY(BlueprintAssignable)
+	FBaseCharacterDelegateWithoutParam reloadAttack;
 };
