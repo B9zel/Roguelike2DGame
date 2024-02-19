@@ -7,6 +7,32 @@
 
 
 
+ASkeletonEnemy::ASkeletonEnemy(const FObjectInitializer& OI) : Super(OI)
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+void ASkeletonEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	
+}
+
+void ASkeletonEnemy::Tick(float deltaTime)
+{
+	Super::Tick(deltaTime);
+	
+	if (GetVelocity().X > 0)
+	{
+		SetActorRotation(FRotator(0, 0, 0));
+	}
+	else if (GetVelocity().X < 0)
+	{
+		SetActorRotation(FRotator(0, 180, 0));
+	}
+}
+
 void ASkeletonEnemy::OnAttack()
 {
 	if (canAttack)
@@ -30,9 +56,9 @@ void ASkeletonEnemy::OnDeath(AActor* deadActor)
 	GetAnimInstance()->JumpToNode("Death");
 }
 
-void ASkeletonEnemy::OnTakeDamage(AActor* instigatorDamage)
+void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 {
-	Super::OnTakeDamage(instigatorDamage);
+	Super::OnTakePlayerDamage(instigatorDamage);
 
 	UE_LOG(LogTemp, Warning, TEXT("Damage"));
 	if (!isAttacking)

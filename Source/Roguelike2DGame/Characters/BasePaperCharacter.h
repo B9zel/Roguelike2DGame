@@ -17,7 +17,7 @@ class ROGUELIKE2DGAME_API ABasePaperCharacter : public APaperZDCharacter
 	
 public:
 
-	ABasePaperCharacter();
+	ABasePaperCharacter(const FObjectInitializer& OI);
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool GetIsAttacking();
 	UFUNCTION(BlueprintCallable)
@@ -39,14 +39,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEndAttack();
 	UFUNCTION()
-	virtual void OnTakeDamage(AActor* instigatorDamage);
+	virtual void OnTakePlayerDamage(AActor* instigatorDamage);
 
 	UFUNCTION()
 	virtual void OnDeath(AActor* deadActor);
 protected:
-
-	UPROPERTY(EditAnywhere)
-	class UHealthComponent* healthComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int damage;
@@ -69,4 +66,9 @@ public:
 	FBaseCharacterDelegateWithoutParam endAttack;
 	UPROPERTY(BlueprintAssignable)
 	FBaseCharacterDelegateWithoutParam reloadAttack;
+
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* healthComponent;
+
 };

@@ -6,9 +6,9 @@
 #include "../BasePaperCharacter.h"
 #include "MainPaperCharacter.generated.h"
 
-/**
- * 
- */
+
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API AMainPaperCharacter : public ABasePaperCharacter
 {
@@ -16,7 +16,7 @@ class ROGUELIKE2DGAME_API AMainPaperCharacter : public ABasePaperCharacter
 
 public:
 
-	AMainPaperCharacter();
+	AMainPaperCharacter(const FObjectInitializer& OI);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool GetIsDashing();

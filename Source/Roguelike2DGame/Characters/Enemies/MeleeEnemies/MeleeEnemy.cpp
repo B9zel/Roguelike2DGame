@@ -11,7 +11,7 @@
 
 
 
-AMeleeEnemy::AMeleeEnemy()
+AMeleeEnemy::AMeleeEnemy(const FObjectInitializer& OI) : Super(OI)
 {
 	collisonBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
 	collisonBoxComponent->SetupAttachment(GetRootComponent());

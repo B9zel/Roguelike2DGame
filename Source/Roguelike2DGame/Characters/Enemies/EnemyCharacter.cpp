@@ -5,7 +5,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 
 
-AEnemyCharacter::AEnemyCharacter()
+AEnemyCharacter::AEnemyCharacter(const FObjectInitializer& OI) :Super(OI)
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }

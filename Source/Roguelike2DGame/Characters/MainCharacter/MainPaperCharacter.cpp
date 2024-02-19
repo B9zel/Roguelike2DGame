@@ -22,7 +22,7 @@
 
 
 
-AMainPaperCharacter::AMainPaperCharacter()
+AMainPaperCharacter::AMainPaperCharacter(const FObjectInitializer& OI) : Super(OI)
 {
 	springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Srping arm"));
 	springArmComponent->SetupAttachment(RootComponent);
@@ -52,7 +52,7 @@ void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, GetRootComponent(), NAME_None, FVector(-20,0,0), FRotator(0), EAttachLocation::Type::SnapToTarget,false,false);
+	niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, GetRootComponent(), NAME_None, FVector(-20,0,0), FRotator(0), EAttachLocation::Type::KeepRelativeOffset,false,false);
 	niagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
 	
 }

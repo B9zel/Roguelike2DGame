@@ -15,7 +15,7 @@ class ROGUELIKE2DGAME_API AMeleeEnemy : public AEnemyCharacter
 	GENERATED_BODY()
 public:
 
-	AMeleeEnemy();
+	AMeleeEnemy(const FObjectInitializer& OI);
 
 protected:
 
@@ -24,7 +24,7 @@ protected:
 	virtual void OnAttackHit() override;
 
 	virtual void OnEndAttack() override;
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UBoxComponent* collisonBoxComponent;
 };

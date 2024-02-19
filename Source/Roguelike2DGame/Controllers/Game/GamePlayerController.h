@@ -6,12 +6,22 @@
 #include "GameFramework/PlayerController.h"
 #include "GamePlayerController.generated.h"
 
-/**
- * 
- */
+
+class AHUDGame;
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API AGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+
+	AGamePlayerController();
+protected:
+
+	virtual void BeginPlay() override;
+
+protected:
+
+	AHUDGame* HUD;
 };

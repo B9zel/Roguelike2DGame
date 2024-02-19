@@ -36,13 +36,13 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	int maxHealth;
+	int32 maxHealth;
 	UPROPERTY(EditAnywhere)
-	int currentHealth;
+	int32 currentHealth;
 
 	bool isDead;
 
 public:
-
+	UPROPERTY(BlueprintAssignable)
 	FHealthComponentDelegateOneParam takeDamageDelegate;
 };

@@ -15,7 +15,7 @@ class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 	GENERATED_BODY()
 public:
 
-	AEnemyCharacter();
+	AEnemyCharacter(const FObjectInitializer& OI);
 
 protected:
 

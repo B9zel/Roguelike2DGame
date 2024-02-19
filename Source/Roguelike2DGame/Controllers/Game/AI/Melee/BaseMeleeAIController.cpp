@@ -9,8 +9,11 @@ ABaseMeleeAIController::ABaseMeleeAIController()
 {
 	isAttackMode = false;
 	isPatrollingMode = true;
+	isImmediatelyAttack = false;
+
 	distanceVisionOfPatrolling = 100.f;
 	timeStay = 2.f;
+
 	toAttackCharacter = nullptr;
 	controlledCharacter = nullptr;
 }
@@ -25,6 +28,11 @@ const ACharacter* ABaseMeleeAIController::GetToAttackCharacter()
 	return toAttackCharacter;
 }
 
+void ABaseMeleeAIController::SetIsImmediatelyAttack(bool Immediately)
+{
+	isImmediatelyAttack = Immediately;
+}
+
 void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -32,6 +40,13 @@ void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 	controlledCharacter = Cast<AMeleeEnemy>(InPawn);
 
 	controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
+
+	if (isImmediatelyAttack)
+	{
+		isAttackMode = true;
+		isPatrollingMode = false;
+		OnAttckCharacter();
+	}
 }
 
 void ABaseMeleeAIController::OnRealoadAttackCharacter()

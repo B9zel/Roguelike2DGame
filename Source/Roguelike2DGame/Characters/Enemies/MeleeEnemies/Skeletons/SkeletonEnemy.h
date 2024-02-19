@@ -6,15 +6,22 @@
 #include "../MeleeEnemy.h"
 #include "SkeletonEnemy.generated.h"
 
-/**
- * 
- */
+
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API ASkeletonEnemy : public AMeleeEnemy
 {
 	GENERATED_BODY()
+public:
+
+	ASkeletonEnemy(const FObjectInitializer& OI);
 
 protected:
+
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float deltaTime) override;
 
 	virtual void OnAttack() override;
 
@@ -22,5 +29,7 @@ protected:
 
 	virtual void OnDeath(AActor* deadActor) override;
 
-	virtual void OnTakeDamage(AActor* instigatorDamage) override;
+	virtual void OnTakePlayerDamage(AActor* instigatorDamage) override;
+
+
 };

@@ -10,10 +10,11 @@
 
 
 
-ABasePaperCharacter::ABasePaperCharacter()
+ABasePaperCharacter::ABasePaperCharacter(const FObjectInitializer& OI) : Super(OI)
 {
-	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakeDamage);
+	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
+	healthComponent->RegisterComponent();
 
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
@@ -66,7 +67,7 @@ void ABasePaperCharacter::OnEndAttack()
 	endAttack.Broadcast();
 }
 
-void ABasePaperCharacter::OnTakeDamage(AActor* instigatorDamage)
+void ABasePaperCharacter::OnTakePlayerDamage(AActor* instigatorDamage)
 {
 }
 

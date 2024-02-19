@@ -6,9 +6,9 @@
 #include "AIController.h"
 #include "BaseMeleeAIController.generated.h"
 
-/**
- * 
- */
+class AMeleeEnemy;
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API ABaseMeleeAIController : public AAIController
 {
@@ -19,10 +19,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const class AMeleeEnemy* GetControlledCharacter();
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const class ACharacter* GetToAttackCharacter();
 
+	void SetIsImmediatelyAttack(bool Immediately);
+
 protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isAttackMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -31,10 +35,15 @@ protected:
 	float distanceVisionOfPatrolling;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float timeStay;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class ACharacter* toAttackCharacter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class AMeleeEnemy* controlledCharacter;
+
+	UPROPERTY(BlueprintReadWrite)
+	ACharacter* toAttackCharacter;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	AMeleeEnemy* controlledCharacter;
+
+
+	UPROPERTY(EditAnywhere)
+	bool isImmediatelyAttack;
 
 protected:
 
@@ -42,6 +51,7 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRealoadAttackCharacter();
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnAttckCharacter();
 };
