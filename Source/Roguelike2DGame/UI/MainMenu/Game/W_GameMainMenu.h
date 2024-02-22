@@ -8,7 +8,7 @@
 
 
 class UW_HeathPoints;
-
+class UW_EnemyHealthPoints;
 
 UCLASS()
 class ROGUELIKE2DGAME_API UW_GameMainMenu : public UUserWidget
@@ -18,4 +18,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UW_HeathPoints* healthStat;
+	UPROPERTY(meta = (BindWidget))
+	UW_EnemyHealthPoints* bossHealthStat;
+
+public:
+
+	UW_HeathPoints* GetHeatlhStat();
+
+	UW_EnemyHealthPoints* GetBossHeathStat();
 };

@@ -43,6 +43,9 @@ protected:
 
 	UFUNCTION()
 	virtual void OnDeath(AActor* deadActor);
+
+	UFUNCTION()
+	virtual void OnSpawn(AActor* deadActor);
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

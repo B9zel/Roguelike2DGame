@@ -23,16 +23,18 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetMaxHP();
 
+	void SetCurrentHP(int32 newHP);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
-public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
+	UFUNCTION()
+	void OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
 	UPROPERTY(EditAnywhere)

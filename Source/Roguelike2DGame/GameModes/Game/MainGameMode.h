@@ -17,6 +17,9 @@ public:
 
 	void OnDeathActor(AActor* deadActor);
 
+	void OnSpawnActor(AActor* spawnActor);
+
 public:
 	FMainGameModeDelegateOneParam deathDeligate;
+	FMainGameModeDelegateOneParam spawnDeligate;
 };

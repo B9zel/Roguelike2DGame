@@ -45,7 +45,11 @@ void ABasePaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->deathDeligate.AddDynamic(this, &ABasePaperCharacter::OnDeath);
+	AMainGameMode* gameMode = Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this));
+	gameMode->deathDeligate.AddDynamic(this, &ABasePaperCharacter::OnDeath);
+	gameMode->spawnDeligate.AddDynamic(this, &ABasePaperCharacter::OnSpawn);
+
+	gameMode->OnSpawnActor(this);
 }
 
 void ABasePaperCharacter::OnAttack()
@@ -72,6 +76,10 @@ void ABasePaperCharacter::OnTakePlayerDamage(AActor* instigatorDamage)
 }
 
 void ABasePaperCharacter::OnDeath(AActor* deadActor)
+{
+}
+
+void ABasePaperCharacter::OnSpawn(AActor* deadActor)
 {
 }
 

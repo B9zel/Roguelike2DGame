@@ -6,6 +6,7 @@
 #include "../../../../../Controllers/Game/AI/Melee/BaseMeleeAIController.h"
 #include "../../../../../GameModes/Game/MainGameMode.h"
 #include <Kismet/GameplayStatics.h>
+#include <PaperZDAnimInstance.h>
 
 
 
@@ -15,15 +16,36 @@ ASkeletonKing::ASkeletonKing(const FObjectInitializer& OI) : Super(OI)
 
 	maxSkeletons = 5;
 	currenSkeletons = 0;
+
+	
 }
 
-void ASkeletonKing::SpawnSkeletMinion()
+void ASkeletonKing::OnDeath(AActor* actor)
 {
-	ASkeletonEnemy* character = GetWorld()->SpawnActor<ASkeletonEnemy>(skeletonClass, GetActorLocation(), FRotator(0, 0, 0));
-	character->GetController<ABaseMeleeAIController>()->SetIsImmediatelyAttack(true);
-	Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->deathDeligate.AddDynamic(this, &ASkeletonKing::OnDeathSkeletonMinion);
-	currenSkeletons++;
+	Super::OnDeath(actor);
 
+	if (actor == this)
+	{
+		DisableInput(GetController<APlayerController>());
+		GetAnimInstance()->JumpToNode("Death");
+	}
+}
+
+ASkeletonEnemy* ASkeletonKing::SpawnSkeletMinion()
+{
+	ASkeletonEnemy* character = nullptr;
+	if (currenSkeletons < maxSkeletons)
+	{	
+
+		character = GetWorld()->SpawnActor<ASkeletonEnemy>(skeletonClass, GetActorLocation(), FRotator(0, 0, 0));
+		if (character != nullptr)
+		{
+			character->GetController<ABaseMeleeAIController>()->SetIsImmediatelyAttack(true);
+			Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->deathDeligate.AddDynamic(this, &ASkeletonKing::OnDeathSkeletonMinion);
+			currenSkeletons++;
+		}
+	}
+	return character;
 }
 
 void ASkeletonKing::OnDeathSkeletonMinion(AActor* deadActor)
