@@ -27,6 +27,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float deltaTime) override;
 	
 	
 	virtual void OnJumped_Implementation() override;
@@ -46,6 +47,12 @@ protected:
 	virtual void OnAttack() override;
 
 	virtual void OnAttackHit() override;
+
+	virtual void OnDeath(AActor* deadActor) override;
+
+	virtual void OnSpawn(AActor* spawnActor) override;
+	
+	void Regeneration();
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -89,5 +96,7 @@ protected:
 	bool isDashing;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool canDash;
+private:
 
+	FTimerHandle healthTimer;
 };

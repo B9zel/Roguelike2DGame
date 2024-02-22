@@ -18,6 +18,9 @@
 #include <NiagaraSystem.h>
 #include <NiagaraFunctionLibrary.h>
 #include <NiagaraComponent.h>
+#include "../../Components/HealthComponent/HealthComponent.h"
+#include "../Enemies/MeleeEnemies/Bosses/SkeletonKing/SkeletonKing.h"
+#include "../../HUD/Game/HUDGame.h"
 
 
 
@@ -52,9 +55,17 @@ void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+	GetWorld()->GetTimerManager().SetTimer(healthTimer, this, &AMainPaperCharacter::Regeneration, 2.f, true);
 	niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, GetRootComponent(), NAME_None, FVector(-20,0,0), FRotator(0), EAttachLocation::Type::KeepRelativeOffset,false,false);
 	niagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
 	
+}
+
+void AMainPaperCharacter::Tick(float deltaTime)
+{
+	Super::Tick(deltaTime);
+
 }
 
 
@@ -146,7 +157,6 @@ void AMainPaperCharacter::OnStopDash()
 	GetCharacterMovement()->Velocity = FVector(0.f);
 	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
 
-	//niagaraComponent->Deactivate();
 	isDashing = false;
 	FTimerHandle time;
 	GetWorld()->GetTimerManager().SetTimer(time, this, &AMainPaperCharacter::OnReloadDash, reloadDash, false);
@@ -163,8 +173,6 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 
 	GetAnimationComponent()->GetAnimInstance()->JumpToNode("Dash");
 }
-
-
 
 
 void AMainPaperCharacter::OnAttack()
@@ -194,4 +202,33 @@ void AMainPaperCharacter::OnAttackHit()
 	}
 	
 	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMainPaperCharacter::OnReloadAttack, timeReloadAttack, false);
+}
+
+void AMainPaperCharacter::OnDeath(AActor* deadActor)
+{
+	Super::OnDeath(deadActor);
+
+	if (deadActor == this)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(healthTimer);
+		GetAnimInstance()->JumpToNode("Death");
+		DisableInput(GetController<APlayerController>());
+	}
+
+}
+
+void AMainPaperCharacter::OnSpawn(AActor* spawnActor)
+{
+	Super::OnSpawn(spawnActor);
+
+	if (spawnActor->StaticClass() == ASkeletonKing::StaticClass())
+	{
+		GetController<APlayerController>()->GetHUD<AHUDGame>()->ShowEnemyHealthStat(true);
+	}
+}
+
+void AMainPaperCharacter::Regeneration()
+{
+	healthComponent->SetCurrentHP(FMath::Clamp(healthComponent->GetCurrentHP() + 5,0,healthComponent->GetMaxHP()));
+	UE_LOG(LogTemp, Warning, TEXT("Regenaration %f"), healthComponent->GetCurrentHP());
 }

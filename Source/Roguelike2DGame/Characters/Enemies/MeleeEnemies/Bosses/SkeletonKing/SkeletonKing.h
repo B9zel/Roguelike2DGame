@@ -20,8 +20,10 @@ public:
 	ASkeletonKing(const FObjectInitializer& OI);
 
 protected:
+	UFUNCTION(BlueprintCallable)
+	ASkeletonEnemy* SpawnSkeletMinion();
 
-	void SpawnSkeletMinion();
+	virtual void OnDeath(AActor* deadActor) override;
 
 private:
 	UFUNCTION()

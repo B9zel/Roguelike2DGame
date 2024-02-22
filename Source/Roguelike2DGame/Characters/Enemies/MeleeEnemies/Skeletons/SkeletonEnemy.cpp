@@ -52,8 +52,14 @@ void ASkeletonEnemy::OnReloadAttack()
 void ASkeletonEnemy::OnDeath(AActor* deadActor)
 {
 	Super::OnDeath(deadActor);
+	if (deadActor == this)
+	{
+		GetAnimInstance()->JumpToNode("Death");
+		DisableInput(GetController<APlayerController>());
 
-	GetAnimInstance()->JumpToNode("Death");
+		FTimerHandle timer;
+		GetWorld()->GetTimerManager().SetTimer(timer, this, &ASkeletonEnemy::Destroyer, 3, false);
+	}
 }
 
 void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
@@ -65,6 +71,11 @@ void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 	{
 		GetAnimInstance()->JumpToNode("TakeDamage");
 	}
+}
+
+void ASkeletonEnemy::Destroyer()
+{
+	Destroy();
 }
 
 

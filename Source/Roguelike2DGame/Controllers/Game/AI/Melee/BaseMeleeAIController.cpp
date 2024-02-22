@@ -38,8 +38,10 @@ void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	controlledCharacter = Cast<AMeleeEnemy>(InPawn);
-
-	controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
+	if (controlledCharacter != nullptr)
+	{
+		controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
+	}
 
 	if (isImmediatelyAttack)
 	{

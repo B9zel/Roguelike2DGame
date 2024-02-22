@@ -38,7 +38,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	ACharacter* toAttackCharacter;
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite)//, meta = (AllowPrivateAccess = "true"))
 	AMeleeEnemy* controlledCharacter;
 
 

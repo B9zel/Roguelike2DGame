@@ -31,6 +31,11 @@ int32 UHealthComponent::GetMaxHP()
 	return maxHealth;
 }
 
+void UHealthComponent::SetCurrentHP(int32 newHP)
+{
+	currentHealth = newHP;
+}
+
 
 // Called when the game starts
 void UHealthComponent::BeginPlay()
@@ -45,6 +50,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	
 }
 
 
@@ -52,12 +58,11 @@ void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage,
 {
 	currentHealth = FMath::Clamp(currentHealth - Damage, 0, maxHealth);
 	takeDamageDelegate.Broadcast(DamagedActor);
-	UE_LOG(LogTemp, Warning, TEXT("%f"), currentHealth);
-	if (currentHealth == 0)
+	UE_LOG(LogTemp, Error, TEXT("%s %s"), DamagedActor, DamageCauser);
+	if (currentHealth == 0 && !isDead)
 	{
+		isDead = true;
 		Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->OnDeathActor(GetOwner());
-		
-		// Call function "Dead"
 	}
 }
 

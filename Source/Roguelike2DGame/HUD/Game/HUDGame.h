@@ -21,6 +21,8 @@ public:
 
 	bool ShowGameMainMenu(bool isShow, int zOrder=0);
 
+	bool ShowEnemyHealthStat(bool isShow);
+
 public:
 	
 	UPROPERTY(EditAnywhere)
@@ -28,5 +30,6 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UW_GameMainMenu* mainMenuWidget;
 };
