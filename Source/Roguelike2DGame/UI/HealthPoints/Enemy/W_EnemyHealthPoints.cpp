@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -35,3 +36,17 @@ void UW_EnemyHealthPoints::SetHealthComponentBind(UHealthComponent* component)
 {
 	healthBind = component;
 }
+=======
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "W_EnemyHealthPoints.h"
+#include <Components/ProgressBar.h>
+
+
+
+const UProgressBar* UW_EnemyHealthPoints::GetHealthProgressBar()
+{
+	return PB_Health;
+}
+>>>>>>> ff07792bbfedc3c9bb8c7def60ebb4fe45bc5ba7
