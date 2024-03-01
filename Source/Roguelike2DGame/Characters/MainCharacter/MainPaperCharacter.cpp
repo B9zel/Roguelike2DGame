@@ -223,12 +223,12 @@ void AMainPaperCharacter::OnSpawn(AActor* spawnActor)
 
 	if (spawnActor->StaticClass() == ASkeletonKing::StaticClass())
 	{
-		GetController<APlayerController>()->GetHUD<AHUDGame>()->ShowEnemyHealthStat(true);
+		GetController<APlayerController>()->GetHUD<AHUDGame>()->EnableEnemyHealthStat(Cast<ABasePaperCharacter>(spawnActor)->GetHealthComponent());
 	}
 }
 
 void AMainPaperCharacter::Regeneration()
 {
 	healthComponent->SetCurrentHP(FMath::Clamp(healthComponent->GetCurrentHP() + 5,0,healthComponent->GetMaxHP()));
-	UE_LOG(LogTemp, Warning, TEXT("Regenaration %f"), healthComponent->GetCurrentHP());
+	//UE_LOG(LogTemp, Warning, TEXT("Regenaration %f"), healthComponent->GetCurrentHP());
 }

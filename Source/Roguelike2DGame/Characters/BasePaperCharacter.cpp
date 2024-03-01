@@ -14,7 +14,7 @@ ABasePaperCharacter::ABasePaperCharacter(const FObjectInitializer& OI) : Super(O
 {
 	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
-	healthComponent->RegisterComponent();
+	//healthComponent->RegisterComponent();
 
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);

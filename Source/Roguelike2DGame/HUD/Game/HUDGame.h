@@ -7,7 +7,7 @@
 #include "HUDGame.generated.h"
 
 class UW_GameMainMenu;
-
+class UHealthComponent;
 
 
 UCLASS()
@@ -21,8 +21,8 @@ public:
 
 	bool ShowGameMainMenu(bool isShow, int zOrder=0);
 
-	bool ShowEnemyHealthStat(bool isShow);
-
+	bool EnableEnemyHealthStat(UHealthComponent* bindComponent);
+	bool DisableEnemyHealthStat();
 public:
 	
 	UPROPERTY(EditAnywhere)

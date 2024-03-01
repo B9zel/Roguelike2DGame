@@ -18,8 +18,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UW_HeathPoints* healthStat;
-	UPROPERTY(meta = (BindWidget))
-	UW_EnemyHealthPoints* bossHealthStat;
+	//UPROPERTY(meta = (BindWidget))
+	//UW_EnemyHealthPoints* bossHealthStat;
 
 public:
 

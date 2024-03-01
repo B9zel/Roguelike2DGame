@@ -9,6 +9,7 @@
 
 
 class UProgressBar;
+class UHealthComponent;
 
 UCLASS()
 class ROGUELIKE2DGAME_API UW_EnemyHealthPoints : public UUserWidget
@@ -16,9 +17,20 @@ class ROGUELIKE2DGAME_API UW_EnemyHealthPoints : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = (BindWidget))
+
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	float BindPercentHealth();
+
+protected:
+	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
 	UProgressBar* PB_Health;
+
+	UHealthComponent* healthBind;
 public:
 
 	const UProgressBar* GetHealthProgressBar();
+
+	void SetHealthComponentBind(UHealthComponent* component);
 };

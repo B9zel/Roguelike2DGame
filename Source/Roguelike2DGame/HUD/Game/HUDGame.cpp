@@ -4,6 +4,7 @@
 #include "HUDGame.h"
 #include "../../UI/MainMenu/Game/W_GameMainMenu.h"
 #include "../../UI/HealthPoints/Enemy/W_EnemyHealthPoints.h"
+#include "../../Components/HealthComponent/HealthComponent.h"
 
 
 AHUDGame::AHUDGame()
@@ -31,18 +32,23 @@ bool AHUDGame::ShowGameMainMenu(bool isShow,int zOrder)
 	return false;
 }
 
-bool AHUDGame::ShowEnemyHealthStat(bool isShow)
+bool AHUDGame::EnableEnemyHealthStat(UHealthComponent* bindComponent)
 {
 	if (mainMenuWidget != nullptr)
 	{
-		if (isShow)
-		{
-			mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		mainMenuWidget->GetBossHeathStat()->SetHealthComponentBind(bindComponent);
+		mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Visible);
+		
+		return true;
+	}
+	return false;
+}
+
+bool AHUDGame::DisableEnemyHealthStat()
+{
+	if (mainMenuWidget != nullptr)
+	{
+		mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Collapsed);
 		return true;
 	}
 	return false;
