@@ -25,7 +25,7 @@
 
 
 
-AMainPaperCharacter::AMainPaperCharacter(const FObjectInitializer& OI) : Super(OI)
+AMainPaperCharacter::AMainPaperCharacter() 
 {
 	springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Srping arm"));
 	springArmComponent->SetupAttachment(RootComponent);

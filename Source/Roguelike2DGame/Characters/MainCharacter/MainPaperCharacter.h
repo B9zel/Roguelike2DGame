@@ -16,8 +16,8 @@ class ROGUELIKE2DGAME_API AMainPaperCharacter : public ABasePaperCharacter
 
 public:
 
-	AMainPaperCharacter(const FObjectInitializer& OI);
-
+	AMainPaperCharacter();
+	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool GetIsDashing();
 
@@ -54,7 +54,9 @@ protected:
 	
 	void Regeneration();
 
-public:
+
+protected:
+
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* springArmComponent;
 	UPROPERTY(EditAnywhere)
@@ -64,10 +66,9 @@ public:
 	class UNiagaraSystem* niagaraSystem;
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* niagaraComponent;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> dashParticle;
-
-protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* actionRun;

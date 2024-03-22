@@ -21,7 +21,7 @@ float UW_HeathPoints::BindPercentHealthPoints()
 	{
 		if (healthComponentOfCharacter->GetMaxHP() != 0.f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%f"), healthComponentOfCharacter->GetCurrentHP() / healthComponentOfCharacter->GetMaxHP());
+			//UE_LOG(LogTemp, Warning, TEXT("%f"), healthComponentOfCharacter->GetCurrentHP() / healthComponentOfCharacter->GetMaxHP());
 			return (float)healthComponentOfCharacter->GetCurrentHP() / (float)healthComponentOfCharacter->GetMaxHP();
 		}
 	}

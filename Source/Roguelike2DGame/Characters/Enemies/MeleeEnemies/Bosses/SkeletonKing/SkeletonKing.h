@@ -16,9 +16,8 @@ class ROGUELIKE2DGAME_API ASkeletonKing : public AMeleeEnemy
 {
 	GENERATED_BODY()
 public:
-
-	ASkeletonKing(const FObjectInitializer& OI);
-
+	ASkeletonKing();
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	ASkeletonEnemy* SpawnSkeletMinion();

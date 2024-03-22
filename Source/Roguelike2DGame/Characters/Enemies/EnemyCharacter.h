@@ -15,10 +15,15 @@ class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 	GENERATED_BODY()
 public:
 
-	AEnemyCharacter(const FObjectInitializer& OI);
+	AEnemyCharacter();
 
+	
+	TArray<TEnumAsByte<EObjectTypeQuery>> GetBlockObjectPatrolling();
 protected:
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchDirectionX();
+
+	UPROPERTY(EditAnywhere)
+	TArray<TEnumAsByte<EObjectTypeQuery>> blockObjectPatrolling;
 };

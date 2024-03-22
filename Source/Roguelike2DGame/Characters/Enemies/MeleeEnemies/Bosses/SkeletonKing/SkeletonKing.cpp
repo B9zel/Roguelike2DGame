@@ -10,7 +10,7 @@
 
 
 
-ASkeletonKing::ASkeletonKing(const FObjectInitializer& OI) : Super(OI)
+ASkeletonKing::ASkeletonKing()
 {
 	timeSpawnSkeletons = 10.f;
 
@@ -40,7 +40,7 @@ ASkeletonEnemy* ASkeletonKing::SpawnSkeletMinion()
 		character = GetWorld()->SpawnActor<ASkeletonEnemy>(skeletonClass, GetActorLocation(), FRotator(0, 0, 0));
 		if (character != nullptr)
 		{
-			character->GetController<ABaseMeleeAIController>()->SetIsImmediatelyAttack(true);
+			//character->GetController<ABaseMeleeAIController>()->SetIsImmediatelyAttack(true);
 			Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->deathDeligate.AddDynamic(this, &ASkeletonKing::OnDeathSkeletonMinion);
 			currenSkeletons++;
 		}

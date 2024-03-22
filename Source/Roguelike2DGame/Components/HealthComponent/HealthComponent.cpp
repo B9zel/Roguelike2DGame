@@ -58,7 +58,7 @@ void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage,
 {
 	currentHealth = FMath::Clamp(currentHealth - Damage, 0, maxHealth);
 	takeDamageDelegate.Broadcast(DamagedActor);
-	UE_LOG(LogTemp, Error, TEXT("%s %s"), DamagedActor, DamageCauser);
+	//UE_LOG(LogTemp, Error, TEXT("%s %s"), DamagedActor, DamageCauser);
 	if (currentHealth == 0 && !isDead)
 	{
 		isDead = true;

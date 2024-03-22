@@ -15,8 +15,9 @@ class ROGUELIKE2DGAME_API AMeleeEnemy : public AEnemyCharacter
 	GENERATED_BODY()
 public:
 
-	AMeleeEnemy(const FObjectInitializer& OI);
+	AMeleeEnemy();
 
+	
 protected:
 
 	virtual void OnAttack() override;

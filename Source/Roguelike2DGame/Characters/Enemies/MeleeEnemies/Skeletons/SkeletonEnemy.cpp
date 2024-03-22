@@ -7,10 +7,12 @@
 
 
 
-ASkeletonEnemy::ASkeletonEnemy(const FObjectInitializer& OI) : Super(OI)
+ASkeletonEnemy::ASkeletonEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
+
+
 
 void ASkeletonEnemy::BeginPlay()
 {
@@ -66,7 +68,7 @@ void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 {
 	Super::OnTakePlayerDamage(instigatorDamage);
 
-	UE_LOG(LogTemp, Warning, TEXT("Damage"));
+	//UE_LOG(LogTemp, Warning, TEXT("Damage"));
 	if (!isAttacking)
 	{
 		GetAnimInstance()->JumpToNode("TakeDamage");

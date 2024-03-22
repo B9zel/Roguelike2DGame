@@ -15,7 +15,7 @@ class ROGUELIKE2DGAME_API ASkeletonEnemy : public AMeleeEnemy
 	GENERATED_BODY()
 public:
 
-	ASkeletonEnemy(const FObjectInitializer& OI);
+	ASkeletonEnemy();
 
 protected:
 

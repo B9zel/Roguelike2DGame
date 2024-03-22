@@ -5,9 +5,18 @@
 #include <GameFramework/CharacterMovementComponent.h>
 
 
-AEnemyCharacter::AEnemyCharacter(const FObjectInitializer& OI) :Super(OI)
+AEnemyCharacter::AEnemyCharacter()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	Tags.Add("Enemy");
+}
+
+
+
+TArray<TEnumAsByte<EObjectTypeQuery>> AEnemyCharacter::GetBlockObjectPatrolling()
+{
+	return blockObjectPatrolling;
 }
 
 void AEnemyCharacter::SwitchDirectionX()

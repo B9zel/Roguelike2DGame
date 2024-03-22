@@ -10,7 +10,7 @@
 
 
 
-ABasePaperCharacter::ABasePaperCharacter(const FObjectInitializer& OI) : Super(OI)
+ABasePaperCharacter::ABasePaperCharacter()
 {
 	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
@@ -39,6 +39,11 @@ void ABasePaperCharacter::SetIsAttacking(bool attack)
 UHealthComponent* ABasePaperCharacter::GetHealthComponent()
 {
 	return healthComponent;
+}
+
+TArray<TEnumAsByte<EObjectTypeQuery>>& ABasePaperCharacter::GetTargetEnumsObject()
+{
+	return targetEnums;
 }
 
 void ABasePaperCharacter::BeginPlay()

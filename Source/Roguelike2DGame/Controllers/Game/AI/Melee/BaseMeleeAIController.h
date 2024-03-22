@@ -13,6 +13,7 @@ UCLASS()
 class ROGUELIKE2DGAME_API ABaseMeleeAIController : public AAIController
 {
 	GENERATED_BODY()
+
 public:
 
 	ABaseMeleeAIController();
@@ -20,38 +21,49 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const class AMeleeEnemy* GetControlledCharacter();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	const class ACharacter* GetToAttackCharacter();
-
-	void SetIsImmediatelyAttack(bool Immediately);
+	
+	FVector GetDistancePatrolling();
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isAttackMode;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UAIPerceptionComponent* perceptionAIComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isPatrollingMode;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float distanceVisionOfPatrolling;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float timeStay;
 
-	UPROPERTY(BlueprintReadWrite)
-	ACharacter* toAttackCharacter;
-	UPROPERTY(BlueprintReadWrite)//, meta = (AllowPrivateAccess = "true"))
-	AMeleeEnemy* controlledCharacter;
-
+	UPROPERTY(EditAnywhere)
+	FName isAttckKeyName;
 
 	UPROPERTY(EditAnywhere)
-	bool isImmediatelyAttack;
+	FName actorToAttackKey;
+
+	UPROPERTY()
+	AActor* actorToAttack;
+	
+	UPROPERTY(BlueprintReadOnly)
+	AMeleeEnemy* controlledCharacter;
+
+	UPROPERTY(EditAnywhere)
+	FVector distancePatrolling;
 
 protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
+	void OnMoveTo(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+
+	UFUNCTION()
+	void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION()
 	virtual void OnRealoadAttackCharacter();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnAttckCharacter();
+
 };

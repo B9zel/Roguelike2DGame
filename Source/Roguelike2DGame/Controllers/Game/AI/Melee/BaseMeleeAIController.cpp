@@ -3,19 +3,23 @@
 
 #include "BaseMeleeAIController.h"
 #include <GameFramework/Character.h>
+#include <Perception/AIPerceptionComponent.h>
+#include <BehaviorTree/BlackboardComponent.h>
+#include <Navigation/PathFollowingComponent.h>
 #include "../../../../Characters/Enemies/MeleeEnemies/MeleeEnemy.h"
+
 
 ABaseMeleeAIController::ABaseMeleeAIController()
 {
-	isAttackMode = false;
-	isPatrollingMode = true;
-	isImmediatelyAttack = false;
+	perceptionAIComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception component"));
+	ReceiveMoveCompleted.AddDynamic(this, &ABaseMeleeAIController::OnMoveTo);
 
-	distanceVisionOfPatrolling = 100.f;
+	isPatrollingMode = true;
+
 	timeStay = 2.f;
 
-	toAttackCharacter = nullptr;
 	controlledCharacter = nullptr;
+	actorToAttack = nullptr;
 }
 
 const AMeleeEnemy* ABaseMeleeAIController::GetControlledCharacter()
@@ -23,14 +27,9 @@ const AMeleeEnemy* ABaseMeleeAIController::GetControlledCharacter()
 	return controlledCharacter;
 }
 
-const ACharacter* ABaseMeleeAIController::GetToAttackCharacter()
+FVector ABaseMeleeAIController::GetDistancePatrolling()
 {
-	return toAttackCharacter;
-}
-
-void ABaseMeleeAIController::SetIsImmediatelyAttack(bool Immediately)
-{
-	isImmediatelyAttack = Immediately;
+	return distancePatrolling;
 }
 
 void ABaseMeleeAIController::OnPossess(APawn* InPawn)
@@ -42,19 +41,44 @@ void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 	{
 		controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
 	}
+	perceptionAIComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ABaseMeleeAIController::OnTargetPerceptionUpdate);
 
-	if (isImmediatelyAttack)
+}
+
+void ABaseMeleeAIController::OnMoveTo(FAIRequestID RequestID, EPathFollowingResult::Type Result)
+{
+	if (Result == EPathFollowingResult::Success)
 	{
-		isAttackMode = true;
-		isPatrollingMode = false;
-		OnAttckCharacter();
+		
+	}
+}
+
+void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
+{
+	UE_LOG(LogTemp, Display, TEXT(" %s"),FString(Actor->GetFName().ToString()));
+	//UE_LOG(LogTemp, Display, TEXT(" %s"), (Stimulus.WasSuccessfullySensed() ? TEXT("true") : TEXT("false")));
+	if (Actor->ActorHasTag("PlayerCharacter"))
+	{
+		bool success = Stimulus.WasSuccessfullySensed();
+		GetBlackboardComponent()->SetValueAsBool(isAttckKeyName, success);
+		if (success)
+		{
+			actorToAttack = Actor;
+		}
+		else
+		{
+			FAIMoveRequest request;
+			request.SetGoalLocation(Actor->GetActorLocation());
+			MoveTo(request);
+			
+			actorToAttack = nullptr;
+		}
+
+		GetBlackboardComponent()->SetValueAsObject(actorToAttackKey, actorToAttack);
 	}
 }
 
 void ABaseMeleeAIController::OnRealoadAttackCharacter()
 {
-	if (isAttackMode)
-	{
-		OnAttckCharacter();
-	}
+	OnAttckCharacter();
 }
