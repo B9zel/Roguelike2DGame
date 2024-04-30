@@ -10,20 +10,10 @@ EBTNodeResult::Type UTaskRotateCharacter::ExecuteTask(UBehaviorTreeComponent& Ow
 	APawn* pawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (pawn != nullptr)
 	{
-		FRotator pawnRotator = pawn->GetActorRotation();
-		if (pawnRotator.Yaw > 0)
-		{
-			pawnRotator.Yaw = 0;
-			pawn->SetActorRotation(pawnRotator);
-		}
-		else
-		{
-			pawnRotator.Yaw = 180;
-			pawn->SetActorRotation(pawnRotator);
-		}
+		pawn->AddActorWorldRotation(FRotator(0, 180, 0));
 		return EBTNodeResult::Succeeded;
 	}
 
-
+	
 	return EBTNodeResult::Failed;
 }

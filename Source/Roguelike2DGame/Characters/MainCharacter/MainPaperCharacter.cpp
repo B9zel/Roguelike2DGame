@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#define DEFAULT_GRAVITY_SCALE 1.f
 
 #include "MainPaperCharacter.h"
 #include <GameFramework/SpringArmComponent.h>
@@ -34,16 +33,16 @@ AMainPaperCharacter::AMainPaperCharacter()
 	cameraComponent->SetupAttachment(springArmComponent);
 	
 	
-	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
-
 	JumpMaxCount = 2;
 
+	m_defoultGravity = 0;
 	powerDash = 1000.f;
 	timeDash = 0.2f;
 	reloadDash = 0.1f;
 	isDashing = false;
 	canDash = true;
 
+	
 }
 
 bool AMainPaperCharacter::GetIsDashing()
@@ -51,15 +50,40 @@ bool AMainPaperCharacter::GetIsDashing()
 	return isDashing;
 }
 
+int32 AMainPaperCharacter::GetMoney()
+{
+	return money;
+}
+
+void AMainPaperCharacter::SetMoney(int32 newMoney)
+{
+	if (newMoney < 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't set negative value in money"));
+		return;
+	}
+	money = newMoney;
+}
+
+void AMainPaperCharacter::AddMoney(int32 addMoney)
+{
+	if (addMoney < 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't add negative value in money"));
+		return;
+	}
+	money += addMoney;
+}
+
 void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FVector scale = GetActorScale();
+	ToNormalize(scale.Normalize());
 	
-	GetWorld()->GetTimerManager().SetTimer(healthTimer, this, &AMainPaperCharacter::Regeneration, 2.f, true);
 	niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, GetRootComponent(), NAME_None, FVector(-20,0,0), FRotator(0), EAttachLocation::Type::KeepRelativeOffset,false,false);
 	niagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
-	
 }
 
 void AMainPaperCharacter::Tick(float deltaTime)
@@ -78,9 +102,9 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	{
 		if (class UEnhancedInputLocalPlayerSubsystem* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player->GetLocalPlayer()))
 		{
-			if (inputMapping != nullptr)
+			if (Input.inputMapping != nullptr)
 			{
-				inputSystem->AddMappingContext(inputMapping, 0);
+				inputSystem->AddMappingContext(Input.inputMapping, 0);
 			}
 		}
 	}
@@ -88,13 +112,14 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 
 	UEnhancedInputComponent* enhuncedInput = Cast<UEnhancedInputComponent>(inputComponent);
 	
-	enhuncedInput->BindAction(actionRun, ETriggerEvent::Triggered, this, &AMainPaperCharacter::RightMove);
+	
+	enhuncedInput->BindAction(Input.actionRun, ETriggerEvent::Triggered, this, &AMainPaperCharacter::RightMove);
 
-	enhuncedInput->BindAction(actionJump, ETriggerEvent::Started, this, &AMainPaperCharacter::Jump);
-	enhuncedInput->BindAction(actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
+	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Started, this, &AMainPaperCharacter::Jump);
+	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
 
-	enhuncedInput->BindAction(actionDash, ETriggerEvent::Started, this, &AMainPaperCharacter::Dash);
-	enhuncedInput->BindAction(actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
+	enhuncedInput->BindAction(Input.actionDash, ETriggerEvent::Started, this, &AMainPaperCharacter::Dash);
+	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
 }
 
 
@@ -144,7 +169,7 @@ void AMainPaperCharacter::Dash()
 		GetCharacterMovement()->GravityScale = 0.f;
 		GetCharacterMovement()->Velocity = GetActorForwardVector();
 	
-		LaunchCharacter((GetActorForwardVector() * powerDash), false, false);
+		LaunchCharacter((GetActorForwardVector() * powerDash * normalizeValues), false, false);
 
 		FTimerHandle handle;
 		GetWorld()->GetTimerManager().SetTimer(handle, this, &AMainPaperCharacter::OnStopDash, timeDash, false);
@@ -155,7 +180,7 @@ void AMainPaperCharacter::OnStopDash()
 {
 	EnableInput(GetController<APlayerController>());
 	GetCharacterMovement()->Velocity = FVector(0.f);
-	GetCharacterMovement()->GravityScale = DEFAULT_GRAVITY_SCALE;
+	GetCharacterMovement()->GravityScale = m_defoultGravity;
 
 	isDashing = false;
 	FTimerHandle time;
@@ -193,7 +218,7 @@ void AMainPaperCharacter::OnAttackHit()
 	TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
-	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack * normalizeValues), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
 
 
 	for (auto& el : res)
@@ -210,7 +235,6 @@ void AMainPaperCharacter::OnDeath(AActor* deadActor)
 
 	if (deadActor == this)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(healthTimer);
 		GetAnimInstance()->JumpToNode("Death");
 		DisableInput(GetController<APlayerController>());
 	}
@@ -227,8 +251,13 @@ void AMainPaperCharacter::OnSpawn(AActor* spawnActor)
 	}
 }
 
-void AMainPaperCharacter::Regeneration()
+void AMainPaperCharacter::ToNormalize(float normalizeVal)
 {
-	healthComponent->SetCurrentHP(FMath::Clamp(healthComponent->GetCurrentHP() + 5,0,healthComponent->GetMaxHP()));
-	//UE_LOG(LogTemp, Warning, TEXT("Regenaration %f"), healthComponent->GetCurrentHP());
+	springArmComponent->TargetArmLength *= normalizeVal;
+
+	GetCharacterMovement()->MaxWalkSpeed *= normalizeVal;
+	GetCharacterMovement()->JumpZVelocity *= normalizeVal;
+	m_defoultGravity = (GetCharacterMovement()->GravityScale *= normalizeVal);
+
+	this->normalizeValues = normalizeVal;
 }

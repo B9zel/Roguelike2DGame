@@ -32,4 +32,9 @@ protected:
 	virtual void OnTakePlayerDamage(AActor* instigatorDamage) override;
 
 	void Destroyer();
+
+protected:
+
+
+
 };

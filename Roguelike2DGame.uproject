@@ -12,7 +12,8 @@
 				"Engine",
 				"PaperZD",
 				"AIModule",
-				"UMG"
+				"UMG",
+				"Paper2D"
 			]
 		}
 	],

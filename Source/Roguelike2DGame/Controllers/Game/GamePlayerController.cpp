@@ -15,6 +15,13 @@ void AGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+}
+
+void AGamePlayerController::OnPossess(APawn* newPawn)
+{
+	Super::OnPossess(newPawn);
+
 	HUD = GetHUD<AHUDGame>();
 	if (HUD != nullptr)
 	{

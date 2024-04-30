@@ -17,4 +17,9 @@ class ROGUELIKE2DGAME_API UTaskFindLocation : public UBTTask_BlueprintBase
 protected:
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector locationProperty;
 };

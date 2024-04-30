@@ -6,14 +6,15 @@
 #include <Perception/AIPerceptionComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <Navigation/PathFollowingComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include "../../../../GameModes/Game/MainGameMode.h"
 #include "../../../../Characters/Enemies/MeleeEnemies/MeleeEnemy.h"
 
 
 ABaseMeleeAIController::ABaseMeleeAIController()
 {
 	perceptionAIComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception component"));
-	ReceiveMoveCompleted.AddDynamic(this, &ABaseMeleeAIController::OnMoveTo);
-
+	
 	isPatrollingMode = true;
 
 	timeStay = 2.f;
@@ -37,26 +38,24 @@ void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	controlledCharacter = Cast<AMeleeEnemy>(InPawn);
-	if (controlledCharacter != nullptr)
+	if (controlledCharacter)
 	{
 		controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
 	}
+	if (auto* mode = Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		mode->deathDeligate.AddDynamic(this, &ABaseMeleeAIController::OnDeathControlledCharacter);
+	}
+
+	UGameplayStatics::GetGameMode(this);
 	perceptionAIComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ABaseMeleeAIController::OnTargetPerceptionUpdate);
 
 }
 
-void ABaseMeleeAIController::OnMoveTo(FAIRequestID RequestID, EPathFollowingResult::Type Result)
-{
-	if (Result == EPathFollowingResult::Success)
-	{
-		
-	}
-}
+
 
 void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
-	UE_LOG(LogTemp, Display, TEXT(" %s"),FString(Actor->GetFName().ToString()));
-	//UE_LOG(LogTemp, Display, TEXT(" %s"), (Stimulus.WasSuccessfullySensed() ? TEXT("true") : TEXT("false")));
 	if (Actor->ActorHasTag("PlayerCharacter"))
 	{
 		bool success = Stimulus.WasSuccessfullySensed();
@@ -78,7 +77,17 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 	}
 }
 
+
 void ABaseMeleeAIController::OnRealoadAttackCharacter()
 {
 	OnAttckCharacter();
+}
+
+void ABaseMeleeAIController::OnDeathControlledCharacter(AActor* actor)
+{
+	if (actor == GetPawn())
+	{
+		UnPossess();
+		Destroy();
+	}
 }

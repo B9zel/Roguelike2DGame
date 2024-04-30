@@ -19,11 +19,21 @@ public:
 
 	
 	TArray<TEnumAsByte<EObjectTypeQuery>> GetBlockObjectPatrolling();
-protected:
+
+	virtual void OnDeath(AActor* deadActor) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchDirectionX();
 
+protected:
+
+	UPROPERTY(EditAnywhere, meta=(ClampMin="0"))
+	uint32 countDropMoney;
+
+	//UPROPERTY(EditAnywhere)
+//	TArray<TEnumAsByte<EObjectTypeQuery>> blockObjectPatrolling;
+
 	UPROPERTY(EditAnywhere)
-	TArray<TEnumAsByte<EObjectTypeQuery>> blockObjectPatrolling;
+	TSubclassOf<class ABaseInteraction> moneyInteract;
+
 };
