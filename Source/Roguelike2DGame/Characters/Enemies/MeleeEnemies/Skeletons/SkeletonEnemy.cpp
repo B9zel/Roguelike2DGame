@@ -3,7 +3,7 @@
 
 #include "SkeletonEnemy.h"
 #include <PaperZDAnimInstance.h>
-
+#include "../../../../Components/HealthComponent/HealthComponent.h"
 
 
 
@@ -58,6 +58,7 @@ void ASkeletonEnemy::OnDeath(AActor* deadActor)
 	{
 		GetAnimInstance()->JumpToNode("Death");
 		DisableInput(GetController<APlayerController>());
+		
 
 		FTimerHandle timer;
 		GetWorld()->GetTimerManager().SetTimer(timer, this, &ASkeletonEnemy::Destroyer, 3, false);
@@ -69,7 +70,7 @@ void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 	Super::OnTakePlayerDamage(instigatorDamage);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Damage"));
-	if (!isAttacking)
+	if (!isAttacking && !healthComponent->GetIsDead())
 	{
 		GetAnimInstance()->JumpToNode("TakeDamage");
 	}

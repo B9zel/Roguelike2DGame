@@ -26,6 +26,22 @@ public:
 
 protected:
 
+	virtual void OnPossess(APawn* InPawn) override;
+
+	
+	UFUNCTION()
+	void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION()
+	virtual void OnRealoadAttackCharacter();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnAttckCharacter();
+
+	UFUNCTION()
+	virtual void OnDeathControlledCharacter(AActor* actor);
+protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UAIPerceptionComponent* perceptionAIComponent;
 
@@ -50,20 +66,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FVector distancePatrolling;
 
-protected:
 
-	virtual void OnPossess(APawn* InPawn) override;
-
-	UFUNCTION()
-	void OnMoveTo(FAIRequestID RequestID, EPathFollowingResult::Type Result);
-
-	UFUNCTION()
-	void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
-
-	UFUNCTION()
-	virtual void OnRealoadAttackCharacter();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void OnAttckCharacter();
 
 };

@@ -3,6 +3,7 @@
 
 #include "EnemyCharacter.h"
 #include <GameFramework/CharacterMovementComponent.h>
+#include "../../Interact/BaseInteraction.h"
 
 
 AEnemyCharacter::AEnemyCharacter()
@@ -10,13 +11,28 @@ AEnemyCharacter::AEnemyCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	Tags.Add("Enemy");
+
+	countDropMoney = 5;
 }
 
 
 
-TArray<TEnumAsByte<EObjectTypeQuery>> AEnemyCharacter::GetBlockObjectPatrolling()
+
+void AEnemyCharacter::OnDeath(AActor* deadActor)
 {
-	return blockObjectPatrolling;
+	Super::OnDeath(deadActor);
+
+	if (deadActor != this)
+		return;
+
+	ABaseInteraction* act = nullptr;
+	for (size_t i = 0; i < countDropMoney; i++)
+	{
+		act = GetWorld()->SpawnActor<ABaseInteraction>(moneyInteract, GetActorLocation(), GetActorRotation());
+	}
+
+
+
 }
 
 void AEnemyCharacter::SwitchDirectionX()
@@ -30,3 +46,8 @@ void AEnemyCharacter::SwitchDirectionX()
 		SetActorRotation(FRotator(0.f, 180.f, 0.f));
 	}
 }
+
+//TArray<TEnumAsByte<EObjectTypeQuery>> AEnemyCharacter::GetBlockObjectPatrolling()
+//{
+//	return blockObjectPatrolling;
+//}

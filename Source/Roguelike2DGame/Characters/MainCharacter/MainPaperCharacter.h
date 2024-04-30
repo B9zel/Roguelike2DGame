@@ -8,6 +8,29 @@
 
 
 
+USTRUCT(BlueprintType)
+struct FCharacterInputAction
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* actionRun;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* actionJump;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* actionDash;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* actionAttack;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputMappingContext* inputMapping;
+};
+
+
 
 UCLASS()
 class ROGUELIKE2DGAME_API AMainPaperCharacter : public ABasePaperCharacter
@@ -20,6 +43,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool GetIsDashing();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetMoney();
+
+	UFUNCTION(BlueprintCallable)
+	void SetMoney(int32 newMoney);
+
+	UFUNCTION(BlueprintCallable)
+	void AddMoney(int32 addMoney);
 
 protected:
 
@@ -52,14 +84,14 @@ protected:
 
 	virtual void OnSpawn(AActor* spawnActor) override;
 	
-	void Regeneration();
+	void ToNormalize(float normalizeVal);
 
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USpringArmComponent* springArmComponent;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UCameraComponent* cameraComponent;
 
 	UPROPERTY(EditAnywhere)
@@ -68,36 +100,31 @@ protected:
 	class UNiagaraComponent* niagaraComponent;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> dashParticle;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionRun;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionJump;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionDash;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionAttack;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputMappingContext* inputMapping;
+	FCharacterInputAction Input;
 	
-	AActor* dashNiagara;
-
+	
 	UPROPERTY(EditAnywhere)
 	float powerDash;
+
 	UPROPERTY(EditAnywhere)
 	float timeDash; 
+
 	UPROPERTY(EditAnywhere)
 	float reloadDash;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool isDashing;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool canDash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float normalizeValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin="0"))
+	int32 money;
+
 private:
 
-	FTimerHandle healthTimer;
+	float m_defoultGravity;
 };

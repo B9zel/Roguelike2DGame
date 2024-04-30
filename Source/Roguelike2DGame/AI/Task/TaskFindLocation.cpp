@@ -12,7 +12,7 @@ EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& Owner
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-		
+	
 	ABaseMeleeAIController* ownerController = Cast<ABaseMeleeAIController>(OwnerComp.GetAIOwner());
 
 	if (ownerController != nullptr)
@@ -27,11 +27,11 @@ EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& Owner
 		UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 		if (!res.IsEmpty())
 		{
-			Blackboard->SetValueAsVector("MoveLocation", res.GetData()->Location);
+			Blackboard->SetValueAsVector(locationProperty.SelectedKeyName, res.GetData()->Location);
 		}
 		else
 		{
-			Blackboard->SetValueAsVector("MoveLocation", startLocation + endLocation);
+			Blackboard->SetValueAsVector(locationProperty.SelectedKeyName, startLocation + endLocation);
 		}
 		
 

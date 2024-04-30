@@ -31,6 +31,11 @@ int32 UHealthComponent::GetMaxHP()
 	return maxHealth;
 }
 
+bool UHealthComponent::GetIsDead()
+{
+	return isDead;
+}
+
 void UHealthComponent::SetCurrentHP(int32 newHP)
 {
 	currentHealth = newHP;

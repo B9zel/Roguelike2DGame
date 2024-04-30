@@ -23,6 +23,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetMaxHP();
 
+	bool GetIsDead();
+
 	void SetCurrentHP(int32 newHP);
 
 protected:
