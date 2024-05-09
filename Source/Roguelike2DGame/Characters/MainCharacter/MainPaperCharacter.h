@@ -31,6 +31,25 @@ struct FCharacterInputAction
 };
 
 
+USTRUCT(BlueprintType)
+struct FCharacterAnimation
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName Jump;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName Punch;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName Dash;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName Death;
+};
+
 
 UCLASS()
 class ROGUELIKE2DGAME_API AMainPaperCharacter : public ABasePaperCharacter
@@ -89,6 +108,7 @@ protected:
 
 protected:
 
+	// Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USpringArmComponent* springArmComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -99,9 +119,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* niagaraComponent;
 
+protected:
+	
+	// Game values
 	UPROPERTY(EditAnywhere)
 	FCharacterInputAction Input;
 	
+	UPROPERTY(EditAnywhere)
+	FCharacterAnimation Anim;
 	
 	UPROPERTY(EditAnywhere)
 	float powerDash;
@@ -117,6 +142,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool canDash;
+	
+	UPROPERTY(EditAnywhere)
+	float capsuleRadiusAttack;
+
+	UPROPERTY(EditAnywhere)
+	float capsuleHalfHeightAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float normalizeValues;

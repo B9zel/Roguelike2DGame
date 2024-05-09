@@ -16,7 +16,7 @@ class ROGUELIKE2DGAME_API UTaskAttackEnemy : public UBTTask_BlueprintBase
 
 protected:
 
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 
 };

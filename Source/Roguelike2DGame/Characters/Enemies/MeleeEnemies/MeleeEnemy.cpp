@@ -6,6 +6,7 @@
 #include <PaperZDAnimInstance.h>
 #include <Kismet/GameplayStatics.h>
 #include <Components/BoxComponent.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 
@@ -15,6 +16,13 @@ AMeleeEnemy::AMeleeEnemy()
 {
 	collisonBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
 	collisonBoxComponent->SetupAttachment(GetRootComponent());
+
+	timeStayInPatrolling = 1.f;
+}
+
+float AMeleeEnemy::GetTimeStayPatrolling()
+{
+	return timeStayInPatrolling;
 }
 
 
@@ -22,6 +30,7 @@ void AMeleeEnemy::OnAttack()
 {
 	canAttack = false;
 	isAttacking = true;
+	GetCharacterMovement()->SetActive(false);
 }
 
 void AMeleeEnemy::OnAttackHit()
@@ -42,6 +51,7 @@ void AMeleeEnemy::OnEndAttack()
 {
 	Super::OnEndAttack();
 
+	GetCharacterMovement()->SetActive(true);
 	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, timeReloadAttack, false);
 }
 

@@ -62,10 +62,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float timeReloadAttack;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isAttacking;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool canAttack;
 
@@ -78,7 +75,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* healthComponent;
 	
+
 	FTimerHandle attackReloadTimer;
+
+	bool isAttacking;
 
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
