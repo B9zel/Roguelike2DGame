@@ -17,7 +17,10 @@ public:
 
 	AMeleeEnemy();
 
-	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetTimeStayPatrolling();
+
+
 protected:
 
 	virtual void OnAttack() override;
@@ -25,6 +28,13 @@ protected:
 	virtual void OnAttackHit() override;
 
 	virtual void OnEndAttack() override;
+
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	float timeStayInPatrolling;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UBoxComponent* collisonBoxComponent;

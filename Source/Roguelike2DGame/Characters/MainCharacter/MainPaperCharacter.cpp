@@ -125,7 +125,7 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 
 void AMainPaperCharacter::OnJumped_Implementation()
 {
-	GetAnimationComponent()->GetAnimInstance()->JumpToNode("Jump");
+	GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Jump);
 }
 
 void AMainPaperCharacter::OnWalkingOffLedge_Implementation(const FVector& PreviousFloorImpactNormal, const FVector& PreviousFloorContactNormal, const FVector& PreviousLocation, float TimeDelta)
@@ -196,7 +196,7 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 {
 	Super::LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 
-	GetAnimationComponent()->GetAnimInstance()->JumpToNode("Dash");
+	GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Dash);
 }
 
 
@@ -208,7 +208,7 @@ void AMainPaperCharacter::OnAttack()
 		{
 			canAttack = false;
 			isAttacking = true;
-			GetAnimationComponent()->GetAnimInstance()->JumpToNode("Punch");
+			GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Punch);
 		}
 	}
 }
@@ -218,7 +218,7 @@ void AMainPaperCharacter::OnAttackHit()
 	TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
-	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack * normalizeValues), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack * normalizeValues), capsuleRadiusAttack, capsuleHalfHeightAttack, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
 
 
 	for (auto& el : res)
@@ -235,7 +235,7 @@ void AMainPaperCharacter::OnDeath(AActor* deadActor)
 
 	if (deadActor == this)
 	{
-		GetAnimInstance()->JumpToNode("Death");
+		GetAnimInstance()->JumpToNode(Anim.Death);
 		DisableInput(GetController<APlayerController>());
 	}
 

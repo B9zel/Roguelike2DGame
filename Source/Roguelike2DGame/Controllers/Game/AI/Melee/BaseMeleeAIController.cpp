@@ -23,11 +23,11 @@ ABaseMeleeAIController::ABaseMeleeAIController()
 	actorToAttack = nullptr;
 }
 
-const AMeleeEnemy* ABaseMeleeAIController::GetControlledCharacter()
-{
-	return controlledCharacter;
-}
-
+//const AMeleeEnemy* ABaseMeleeAIController::GetControlledCharacter()
+//{
+//	return controlledCharacter;
+//}
+//
 FVector ABaseMeleeAIController::GetDistancePatrolling()
 {
 	return distancePatrolling;
@@ -40,14 +40,13 @@ void ABaseMeleeAIController::OnPossess(APawn* InPawn)
 	controlledCharacter = Cast<AMeleeEnemy>(InPawn);
 	if (controlledCharacter)
 	{
-		controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
+	//	controlledCharacter->reloadAttack.AddDynamic(this, &ABaseMeleeAIController::OnRealoadAttackCharacter);
 	}
 	if (auto* mode = Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this)))
 	{
 		mode->deathDeligate.AddDynamic(this, &ABaseMeleeAIController::OnDeathControlledCharacter);
 	}
 
-	UGameplayStatics::GetGameMode(this);
 	perceptionAIComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ABaseMeleeAIController::OnTargetPerceptionUpdate);
 
 }
@@ -66,10 +65,6 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 		}
 		else
 		{
-			FAIMoveRequest request;
-			request.SetGoalLocation(Actor->GetActorLocation());
-			MoveTo(request);
-			
 			actorToAttack = nullptr;
 		}
 
@@ -77,11 +72,11 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 	}
 }
 
-
-void ABaseMeleeAIController::OnRealoadAttackCharacter()
-{
-	OnAttckCharacter();
-}
+//
+//void ABaseMeleeAIController::OnRealoadAttackCharacter()
+//{
+//	OnAttckCharacter();
+//}
 
 void ABaseMeleeAIController::OnDeathControlledCharacter(AActor* actor)
 {
