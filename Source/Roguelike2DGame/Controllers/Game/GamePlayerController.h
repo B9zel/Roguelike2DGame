@@ -9,6 +9,16 @@
 
 class AHUDGame;
 
+USTRUCT(BlueprintType)
+struct FArtifactUsed
+{
+	GENERATED_BODY()
+
+	class UBaseArtifactComponent* leftArtifactComponent;
+
+	class UBaseArtifactComponent* rightArtifactComponent;
+};
+
 
 UCLASS()
 class ROGUELIKE2DGAME_API AGamePlayerController : public APlayerController
@@ -17,6 +27,16 @@ class ROGUELIKE2DGAME_API AGamePlayerController : public APlayerController
 public:
 
 	AGamePlayerController();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetMoney();
+
+	UFUNCTION(BlueprintCallable)
+	void SetMoney(int32 newMoney);
+
+	UFUNCTION(BlueprintCallable)
+	void AddMoney(int32 addMoney);
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -26,4 +46,10 @@ protected:
 protected:
 
 	AHUDGame* HUD;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
+	int32 money;
+
+	FArtifactUsed artifactUsed;
+
 };

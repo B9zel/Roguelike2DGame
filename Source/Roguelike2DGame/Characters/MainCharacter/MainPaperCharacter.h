@@ -3,9 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <EnhancedInputComponent.h>
+#include <InputAction.h>
+
 #include "../BasePaperCharacter.h"
 #include "MainPaperCharacter.generated.h"
 
+
+
+class USpringArmComponent;
+class UCameraComponent;
+class UDashSkillComponent;
+class UDoublejumpSkillComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 
 USTRUCT(BlueprintType)
@@ -25,6 +36,7 @@ struct FCharacterInputAction
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* actionAttack;
+
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
@@ -60,17 +72,16 @@ public:
 
 	AMainPaperCharacter();
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetIsDashing();
+	void InputEnable();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetMoney();
+	void InputDisable();
 
-	UFUNCTION(BlueprintCallable)
-	void SetMoney(int32 newMoney);
+	float GetDefoultGravity() { return m_defoultGravity; }
 
-	UFUNCTION(BlueprintCallable)
-	void AddMoney(int32 addMoney);
+	template<class UserClass>
+	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
+
+	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
 
 protected:
 
@@ -87,13 +98,6 @@ protected:
 	
 	virtual void RightMove(const struct FInputActionInstance& instance);
 
-	virtual void Dash();
-
-	virtual void OnStopDash();
-
-	virtual void OnReloadDash();
-
-	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
 
 	virtual void OnAttack() override;
 
@@ -105,19 +109,23 @@ protected:
 	
 	void ToNormalize(float normalizeVal);
 
-
 protected:
 
 	// Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USpringArmComponent* springArmComponent;
+	USpringArmComponent* springArmComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UCameraComponent* cameraComponent;
+	UCameraComponent* cameraComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UDashSkillComponent* dashSkillComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UDoublejumpSkillComponent* doubleJumpSkillComponent;
 
 	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* niagaraSystem;
-	UPROPERTY(EditAnywhere)
-	class UNiagaraComponent* niagaraComponent;
+	UNiagaraSystem* niagaraSystem;
+	
 
 protected:
 	
@@ -128,20 +136,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FCharacterAnimation Anim;
 	
-	UPROPERTY(EditAnywhere)
-	float powerDash;
-
-	UPROPERTY(EditAnywhere)
-	float timeDash; 
-
-	UPROPERTY(EditAnywhere)
-	float reloadDash;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool isDashing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool canDash;
 	
 	UPROPERTY(EditAnywhere)
 	float capsuleRadiusAttack;
@@ -152,10 +146,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float normalizeValues;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin="0"))
-	int32 money;
-
 private:
 
 	float m_defoultGravity;
 };
+
+template<class UserClass>
+inline void AMainPaperCharacter::BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr<UserClass> Func)
+{
+	if (UEnhancedInputComponent* enhuncedInput = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		enhuncedInput->BindAction(Input.actionDash, ETriggerEvent::Started, object, Func);
+	}
+}
