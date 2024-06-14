@@ -16,8 +16,7 @@ class ROGUELIKE2DGAME_API UW_GameMainMenu : public UUserWidget
 	GENERATED_BODY()
 protected:
 
-	UPROPERTY(meta = (BindWidget))
-	UW_HeathPoints* healthStat;
+	
 	//UPROPERTY(meta = (BindWidget))
 	//UW_EnemyHealthPoints* bossHealthStat;
 

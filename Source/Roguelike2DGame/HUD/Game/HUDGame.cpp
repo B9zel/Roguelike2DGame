@@ -4,7 +4,7 @@
 #include "HUDGame.h"
 #include "../../UI/MainMenu/Game/W_GameMainMenu.h"
 #include "../../UI/HealthPoints/Enemy/W_EnemyHealthPoints.h"
-#include "../../Components/HealthComponent/HealthComponent.h"
+#include "../../Components/HealthManaComponent/HealthManaComponent.h"
 
 
 AHUDGame::AHUDGame()
@@ -32,7 +32,7 @@ bool AHUDGame::ShowGameMainMenu(bool isShow,int zOrder)
 	return false;
 }
 
-bool AHUDGame::EnableEnemyHealthStat(UHealthComponent* bindComponent)
+bool AHUDGame::EnableEnemyHealthStat(UHealthManaComponent* bindComponent)
 {
 	if (mainMenuWidget != nullptr)
 	{

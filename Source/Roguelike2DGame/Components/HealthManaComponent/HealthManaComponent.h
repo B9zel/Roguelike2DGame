@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "HealthComponent.generated.h"
+#include "HealthManaComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthComponentDelegateOneParam, AActor*, instigatorDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthManaComponentDelegateOneParam, AActor*, instigatorDamage);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ROGUELIKE2DGAME_API UHealthComponent : public UActorComponent
+class ROGUELIKE2DGAME_API UHealthManaComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UHealthComponent();
+	UHealthManaComponent();
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetCurrentHP();
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -48,5 +48,5 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FHealthComponentDelegateOneParam takeDamageDelegate;
+	FHealthManaComponentDelegateOneParam takeDamageDelegate;
 };

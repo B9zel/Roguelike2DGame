@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "HealthComponent.h"
+#include "HealthManaComponent.h"
 #include "../../Characters/BasePaperCharacter.h"
 #include "../../GameModes/Game/MainGameMode.h"
 #include <Kismet/GameplayStatics.h>
@@ -9,7 +8,7 @@
 
 
 // Sets default values for this component's properties
-UHealthComponent::UHealthComponent()
+UHealthManaComponent::UHealthManaComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -21,37 +20,37 @@ UHealthComponent::UHealthComponent()
 	isDead = false;
 }
 
-int32 UHealthComponent::GetCurrentHP()
+int32 UHealthManaComponent::GetCurrentHP()
 {
 	return currentHealth;
 }
 
-int32 UHealthComponent::GetMaxHP()
+int32 UHealthManaComponent::GetMaxHP()
 {
 	return maxHealth;
 }
 
-bool UHealthComponent::GetIsDead()
+bool UHealthManaComponent::GetIsDead()
 {
 	return isDead;
 }
 
-void UHealthComponent::SetCurrentHP(int32 newHP)
+void UHealthManaComponent::SetCurrentHP(int32 newHP)
 {
 	currentHealth = newHP;
 }
 
 
 // Called when the game starts
-void UHealthComponent::BeginPlay()
+void UHealthManaComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetOwner<ABasePaperCharacter>()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::OnPlayerTakeAnyDamage);	
+	GetOwner<ABasePaperCharacter>()->OnTakeAnyDamage.AddDynamic(this, &UHealthManaComponent::OnPlayerTakeAnyDamage);
 }
 
 // Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UHealthManaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -59,7 +58,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 
 
-void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+void UHealthManaComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	currentHealth = FMath::Clamp(currentHealth - Damage, 0, maxHealth);
 	takeDamageDelegate.Broadcast(DamagedActor);

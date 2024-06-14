@@ -8,7 +8,7 @@
 #include "BaseInteraction.generated.h"
 
 UCLASS()
-class ROGUELIKE2DGAME_API ABaseInteraction : public AActor, public IInteractInterface
+class ROGUELIKE2DGAME_API ABaseInteraction : public AActor, public IInteract, public IOverlapInteract
 {
 	GENERATED_BODY()
 	
