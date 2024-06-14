@@ -13,7 +13,8 @@
 				"PaperZD",
 				"AIModule",
 				"UMG",
-				"Paper2D"
+				"Paper2D",
+				"CoreUObject"
 			]
 		}
 	],

@@ -10,8 +10,6 @@ AEnemyCharacter::AEnemyCharacter()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	Tags.Add("Enemy");
-
 	countDropMoney = 5;
 }
 
@@ -30,9 +28,6 @@ void AEnemyCharacter::OnDeath(AActor* deadActor)
 	{
 		act = GetWorld()->SpawnActor<ABaseInteraction>(moneyInteract, GetActorLocation(), GetActorRotation());
 	}
-
-
-
 }
 
 void AEnemyCharacter::SwitchDirectionX()
@@ -46,8 +41,3 @@ void AEnemyCharacter::SwitchDirectionX()
 		SetActorRotation(FRotator(0.f, 180.f, 0.f));
 	}
 }
-
-//TArray<TEnumAsByte<EObjectTypeQuery>> AEnemyCharacter::GetBlockObjectPatrolling()
-//{
-//	return blockObjectPatrolling;
-//}

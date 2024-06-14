@@ -18,8 +18,8 @@ public:
 
 	ABaseMeleeAIController();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	const class AMeleeEnemy* GetControlledCharacter();
+	//UFUNCTION(BlueprintCallable, BlueprintPure)
+	//const class AMeleeEnemy* GetControlledCharacter();
 
 	
 	FVector GetDistancePatrolling();
@@ -32,8 +32,8 @@ protected:
 	UFUNCTION()
 	void OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
-	UFUNCTION()
-	virtual void OnRealoadAttackCharacter();
+	//UFUNCTION()
+	//virtual void OnRealoadAttackCharacter();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnAttckCharacter();

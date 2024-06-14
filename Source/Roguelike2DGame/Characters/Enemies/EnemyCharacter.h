@@ -16,9 +16,8 @@ class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 public:
 
 	AEnemyCharacter();
-
 	
-	TArray<TEnumAsByte<EObjectTypeQuery>> GetBlockObjectPatrolling();
+	//TArray<TEnumAsByte<EObjectTypeQuery>> GetBlockObjectPatrolling();
 
 	virtual void OnDeath(AActor* deadActor) override;
 
@@ -29,9 +28,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, meta=(ClampMin="0"))
 	uint32 countDropMoney;
-
-	//UPROPERTY(EditAnywhere)
-//	TArray<TEnumAsByte<EObjectTypeQuery>> blockObjectPatrolling;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseInteraction> moneyInteract;
