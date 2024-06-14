@@ -3,7 +3,6 @@
 
 #include "BaseArtifactComponent.h"
 
-
 UBaseArtifactComponent::UBaseArtifactComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;

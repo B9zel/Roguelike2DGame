@@ -33,8 +33,8 @@ void UDashSkillComponent::BeginPlay()
 	
 	if (m_DashNiagaraComponent)
 	{
-		m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
-	}
+	m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
+}
 }
 
 
@@ -52,7 +52,7 @@ void UDashSkillComponent::Dash()
 		m_ownerCharacter->InputDisable();
 		m_ownerCharacter->GetCharacterMovement()->GravityScale = 0.f;
 		m_ownerCharacter->GetCharacterMovement()->Velocity = forward;
-		
+
 		m_ownerCharacter->LaunchCharacter((forward * powerDash), false, false);
 
 		FTimerHandle handle;
