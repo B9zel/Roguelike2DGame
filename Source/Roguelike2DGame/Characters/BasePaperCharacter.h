@@ -26,7 +26,7 @@ public:
 	void SetIsAttacking(bool attack);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	class UHealthComponent* GetHealthComponent();
+	class UHealthManaComponent* GetHealthComponent();
 
 	TArray<TEnumAsByte<EObjectTypeQuery>>& GetTargetEnumsObject();
 
@@ -73,7 +73,7 @@ protected:
 	TArray<TEnumAsByte<EObjectTypeQuery>> targetEnums;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UHealthComponent* healthComponent;
+	UHealthManaComponent* healthComponent;
 	
 
 	FTimerHandle attackReloadTimer;

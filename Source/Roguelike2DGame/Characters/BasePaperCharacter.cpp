@@ -2,7 +2,7 @@
 
 
 #include "BasePaperCharacter.h"
-#include "../Components/HealthComponent/HealthComponent.h"
+#include "../Components/HealthManaComponent/HealthManaComponent.h"
 #include "../GameModes/Game/MainGameMode.h"
 
 #include <Kismet/GameplayStatics.h>
@@ -13,7 +13,7 @@
 
 ABasePaperCharacter::ABasePaperCharacter()
 {
-	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+	healthComponent = CreateDefaultSubobject<UHealthManaComponent>(TEXT("Health and Mana component"));
 	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
 	//healthComponent->RegisterComponent();
 
@@ -37,7 +37,7 @@ void ABasePaperCharacter::SetIsAttacking(bool attack)
 	this->isAttacking = attack;
 }
 
-UHealthComponent* ABasePaperCharacter::GetHealthComponent()
+UHealthManaComponent* ABasePaperCharacter::GetHealthComponent()
 {
 	return healthComponent;
 }

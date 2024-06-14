@@ -8,6 +8,22 @@
 
 
 
+USTRUCT(BlueprintType)
+struct FSkeletonAnimation
+{
+	GENERATED_BODY()
+
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName death;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName takeDamage;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName attack;
+
+};
 
 UCLASS()
 class ROGUELIKE2DGAME_API ASkeletonEnemy : public AMeleeEnemy
@@ -35,6 +51,10 @@ protected:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	float timeDestroyAfterDeath;
 
+	UPROPERTY(EditAnywhere)
+	FSkeletonAnimation anim;
 
 };

@@ -8,7 +8,7 @@
 
 
 class UProgressBar;
-class UHealthComponent;
+class UHealthManaComponent;
 
 
 UCLASS()
@@ -21,13 +21,13 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* PB_HealthPoints;
 
-	class UHealthComponent* healthComponentOfCharacter;
+	UHealthManaComponent* healthComponentOfCharacter;
 
 protected:
 
 	virtual void NativeConstruct() override;
-	UFUNCTION()
-	float BindPercentHealthPoints();
+	//UFUNCTION()
+	//float BindPercentHealthPoints();
 
 	
 };

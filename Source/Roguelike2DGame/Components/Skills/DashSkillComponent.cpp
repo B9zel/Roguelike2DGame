@@ -30,7 +30,11 @@ void UDashSkillComponent::BeginPlay()
 	m_ownerCharacter = GetOwner<AMainPaperCharacter>();
 	
 	m_DashNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, m_ownerCharacter->GetRootComponent(), NAME_None, FVector(-20, 0, 0), FRotator(0), EAttachLocation::Type::KeepRelativeOffset, false, false);
-	m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
+	
+	if (m_DashNiagaraComponent)
+	{
+		m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
+	}
 }
 
 
@@ -48,7 +52,7 @@ void UDashSkillComponent::Dash()
 		m_ownerCharacter->InputDisable();
 		m_ownerCharacter->GetCharacterMovement()->GravityScale = 0.f;
 		m_ownerCharacter->GetCharacterMovement()->Velocity = forward;
-
+		
 		m_ownerCharacter->LaunchCharacter((forward * powerDash), false, false);
 
 		FTimerHandle handle;
