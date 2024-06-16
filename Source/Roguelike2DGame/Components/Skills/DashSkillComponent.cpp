@@ -30,7 +30,11 @@ void UDashSkillComponent::BeginPlay()
 	m_ownerCharacter = GetOwner<AMainPaperCharacter>();
 	
 	m_DashNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(niagaraSystem, m_ownerCharacter->GetRootComponent(), NAME_None, FVector(-20, 0, 0), FRotator(0), EAttachLocation::Type::KeepRelativeOffset, false, false);
+	
+	if (m_DashNiagaraComponent)
+	{
 	m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
+}
 }
 
 

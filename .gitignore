@@ -4,6 +4,7 @@ Plugins
 DerivedDataCache
 Content/StarterContent
 Intermediate
+Content/StarterContent/
 Saved
 .vscode
 .vs

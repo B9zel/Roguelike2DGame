@@ -2,11 +2,13 @@
 
 
 #include "MainPaperCharacter.h"
-#include "../../Components/HealthComponent/HealthComponent.h"
+#include "../../Components/HealthManaComponent/HealthManaComponent.h"
 #include "../Enemies/MeleeEnemies/Bosses/SkeletonKing/SkeletonKing.h"
 #include "../../HUD/Game/HUDGame.h"
 #include "../../Components/Skills/DashSkillComponent.h"
 #include "../../Components/Skills/DoublejumpSkillComponent.h"
+#include "../../Components/Artifacts/BaseArtifactComponent.h"
+#include "../../Interfaces/InteractInterface.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <PaperZDAnimationComponent.h>
@@ -37,12 +39,16 @@ AMainPaperCharacter::AMainPaperCharacter()
 
 	doubleJumpSkillComponent = CreateDefaultSubobject<UDoublejumpSkillComponent>(TEXT("Double jump"));
 
-	m_defoultGravity = GetCharacterMovement()->GravityScale;
+	m_defoultGravity = 0;
 }
 
 void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	m_defoultGravity = GetCharacterMovement()->GravityScale;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), m_defoultGravity);
 
 	FVector scale = GetActorScale();
 	ToNormalize(scale.Normalize());
@@ -80,6 +86,9 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
 
 	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
+
+	enhuncedInput->BindAction(Input.useFirstArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseFirstArtifact);
+	enhuncedInput->BindAction(Input.useSecondArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseSecondArtifact);
 }
 
 
@@ -119,6 +128,44 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 	}
 }
 
+
+UBaseArtifactComponent* AMainPaperCharacter::BindFirstArtifact(TSubclassOf<UBaseArtifactComponent> artifact)
+{
+	if (firstActiveArtifact != nullptr)
+	{
+		firstActiveArtifact->DestroyComponent(true);
+	}
+	if (IsValid(artifact))
+	{
+		firstActiveArtifact = NewObject<UBaseArtifactComponent>(this, artifact.Get());
+		firstActiveArtifact->RegisterComponent();
+	}
+	else
+	{
+		firstActiveArtifact = nullptr;
+	}
+
+	return firstActiveArtifact;
+}
+
+UBaseArtifactComponent* AMainPaperCharacter::BindSecondArtifact(TSubclassOf<UBaseArtifactComponent> artifact)
+{
+	if (secondActiveArtifact != nullptr)
+	{
+		secondActiveArtifact->DestroyComponent(true);
+	}
+	if (IsValid(artifact))
+	{
+		secondActiveArtifact = NewObject<UBaseArtifactComponent>(this, artifact.Get());
+		secondActiveArtifact->RegisterComponent();
+	}
+	else
+	{
+		secondActiveArtifact = nullptr;
+	}
+
+	return secondActiveArtifact;
+}
 
 void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride)
 {
@@ -177,6 +224,19 @@ void AMainPaperCharacter::OnSpawn(AActor* spawnActor)
 	{
 		GetController<APlayerController>()->GetHUD<AHUDGame>()->EnableEnemyHealthStat(Cast<ABasePaperCharacter>(spawnActor)->GetHealthComponent());
 	}
+}
+
+
+void AMainPaperCharacter::UseFirstArtifact()
+{
+	if (UKismetSystemLibrary::DoesImplementInterface(firstActiveArtifact, UInteract::StaticClass()))
+		Cast<IInteract>(firstActiveArtifact)->Interact_Implementation(this);
+}
+
+void AMainPaperCharacter::UseSecondArtifact()
+{
+	if (UKismetSystemLibrary::DoesImplementInterface(secondActiveArtifact, UInteract::StaticClass()))
+		Cast<IInteract>(secondActiveArtifact)->Interact_Implementation(this);
 }
 
 void AMainPaperCharacter::ToNormalize(float normalizeVal)

@@ -7,7 +7,8 @@
 
 UW_HeathPoints* UW_GameMainMenu::GetHeatlhStat()
 {
-	return healthStat;
+	///return healthStat;
+	return nullptr;
 }
 
 UW_EnemyHealthPoints* UW_GameMainMenu::GetBossHeathStat()

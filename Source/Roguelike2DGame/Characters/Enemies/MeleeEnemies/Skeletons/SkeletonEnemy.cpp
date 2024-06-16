@@ -3,7 +3,7 @@
 
 #include "SkeletonEnemy.h"
 #include <PaperZDAnimInstance.h>
-#include "../../../../Components/HealthComponent/HealthComponent.h"
+#include "../../../../Components/HealthManaComponent/HealthManaComponent.h"
 
 
 
@@ -41,7 +41,7 @@ void ASkeletonEnemy::OnAttack()
 	{
 		AMeleeEnemy::OnAttack();
 
-		GetAnimInstance()->JumpToNode("Attack");
+		GetAnimInstance()->JumpToNode(anim.attack);
 	}
 }
 
@@ -56,12 +56,12 @@ void ASkeletonEnemy::OnDeath(AActor* deadActor)
 	Super::OnDeath(deadActor);
 	if (deadActor == this)
 	{
-		GetAnimInstance()->JumpToNode("Death");
+		GetAnimInstance()->JumpToNode(anim.death);
 		DisableInput(GetController<APlayerController>());
 		
 
 		FTimerHandle timer;
-		GetWorld()->GetTimerManager().SetTimer(timer, this, &ASkeletonEnemy::Destroyer, 3, false);
+		GetWorld()->GetTimerManager().SetTimer(timer, this, &ASkeletonEnemy::Destroyer, timeDestroyAfterDeath, false);
 	}
 }
 
@@ -72,7 +72,7 @@ void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 	//UE_LOG(LogTemp, Warning, TEXT("Damage"));
 	if (!isAttacking && !healthComponent->GetIsDead())
 	{
-		GetAnimInstance()->JumpToNode("TakeDamage");
+		GetAnimInstance()->JumpToNode(anim.takeDamage);
 	}
 }
 

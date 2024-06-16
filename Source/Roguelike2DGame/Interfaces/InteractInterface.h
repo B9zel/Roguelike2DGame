@@ -6,13 +6,19 @@
 
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class UInteractInterface : public UInterface
+class UInteract  : public UInterface
+{
+	GENERATED_BODY()
+};
+
+UINTERFACE(MinimalAPI, Blueprintable)
+class UOverlapInteract : public UInterface
 {
 	GENERATED_BODY()
 };
 
 
-class IInteractInterface
+class IInteract
 {
 	GENERATED_BODY()
 
@@ -20,6 +26,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(AActor* interactiveActor);
+
+};
+
+
+class IOverlapInteract
+{
+	GENERATED_BODY()
+
+public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OverlapInteract(AActor* interactiveActor);

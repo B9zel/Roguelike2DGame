@@ -10,13 +10,14 @@
 #include "MainPaperCharacter.generated.h"
 
 
-
+class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UDashSkillComponent;
 class UDoublejumpSkillComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
+class UBaseArtifactComponent;
 
 
 USTRUCT(BlueprintType)
@@ -26,17 +27,25 @@ struct FCharacterInputAction
 
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionRun;
+	UInputAction* actionRun;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionJump;
+	UInputAction* actionJump;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* actionDash;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionDash;
+	UInputAction* actionAttack;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* actionAttack;
+	UInputAction* useFirstArtifact;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* useSecondArtifact;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* interact;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
@@ -81,6 +90,11 @@ public:
 	template<class UserClass>
 	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
 
+	UFUNCTION(BlueprintCallable)
+	UBaseArtifactComponent* BindFirstArtifact(TSubclassOf<UBaseArtifactComponent> artifact);
+	UFUNCTION(BlueprintCallable)
+	UBaseArtifactComponent* BindSecondArtifact(TSubclassOf<UBaseArtifactComponent> artifact);
+
 	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
 
 protected:
@@ -106,6 +120,12 @@ protected:
 	virtual void OnDeath(AActor* deadActor) override;
 
 	virtual void OnSpawn(AActor* spawnActor) override;
+
+
+
+	virtual void UseFirstArtifact();
+
+	virtual void UseSecondArtifact();
 	
 	void ToNormalize(float normalizeVal);
 
@@ -145,6 +165,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float normalizeValues;
+
+	UBaseArtifactComponent* firstActiveArtifact;
+
+	UBaseArtifactComponent* secondActiveArtifact;
 
 private:
 
