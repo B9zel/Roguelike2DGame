@@ -2,8 +2,11 @@
 
 
 #include "SkeletonEnemy.h"
+#include "../../../../Components/HealthManaComponent/HealthComponent.h"
+#include "../../../../Components/Stat/CharacterStatsComponent.h"
+
 #include <PaperZDAnimInstance.h>
-#include "../../../../Components/HealthManaComponent/HealthManaComponent.h"
+
 
 
 
@@ -11,8 +14,6 @@ ASkeletonEnemy::ASkeletonEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
-
-
 
 void ASkeletonEnemy::BeginPlay()
 {
@@ -37,7 +38,7 @@ void ASkeletonEnemy::Tick(float deltaTime)
 
 void ASkeletonEnemy::OnAttack()
 {
-	if (canAttack)
+	if (statsComponent->GetCanAttack())
 	{
 		AMeleeEnemy::OnAttack();
 
@@ -70,7 +71,7 @@ void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
 	Super::OnTakePlayerDamage(instigatorDamage);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Damage"));
-	if (!isAttacking && !healthComponent->GetIsDead())
+	if (!statsComponent->IsAttacking() && !healthComponent->GetIsDead())
 	{
 		GetAnimInstance()->JumpToNode(anim.takeDamage);
 	}

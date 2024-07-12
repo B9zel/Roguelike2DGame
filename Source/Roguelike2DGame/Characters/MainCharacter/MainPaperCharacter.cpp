@@ -1,14 +1,28 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MainPaperCharacter.h"
-#include "../../Components/HealthManaComponent/HealthManaComponent.h"
-#include "../Enemies/MeleeEnemies/Bosses/SkeletonKing/SkeletonKing.h"
+#include "../../Data/DataAssets/ArtifactUsedDataAsset.h"
+#include "../../Data/Enums/EtypeScroll.h"
+#include "../../Data/Enums/EWeaponType.h"
+
+#include "../../Controllers/Game/GamePlayerController.h"
+
 #include "../../HUD/Game/HUDGame.h"
-#include "../../Components/Skills/DashSkillComponent.h"
+
+#include "../../Components/HealthManaComponent/HealthComponent.h"
+#include "../../Components/HealthManaComponent/ManaComponent.h"
 #include "../../Components/Skills/DoublejumpSkillComponent.h"
 #include "../../Components/Artifacts/BaseArtifactComponent.h"
+#include "../../Components/Stat/CharacterStatsComponent.h"
+#include "../../Components/Skills/DashSkillComponent.h"
+
+#include "../../Interfaces/Weapon/MeleeWeapon.h"
 #include "../../Interfaces/InteractInterface.h"
+#include "../../Interfaces/Weapon/DistanceWeapon.h"
+//#include "Weapon/DistanceWeapon/BaseDistanceWeapon.h"
+//#include "Weapon/MeleeWeapon/BaseMeleeWeapon.h"
+#include "Weapon/BaseWeapon.h"
+
 
 #include <GameFramework/SpringArmComponent.h>
 #include <PaperZDAnimationComponent.h>
@@ -20,9 +34,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Components/CapsuleComponent.h>
 #include <EnhancedInputSubsystems.h>
-#include <NiagaraSystem.h>
-#include <NiagaraFunctionLibrary.h>
-#include <NiagaraComponent.h>
+
 
 
 
@@ -35,9 +47,12 @@ AMainPaperCharacter::AMainPaperCharacter()
 	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	cameraComponent->SetupAttachment(springArmComponent);
 	
+	manaComponent = CreateDefaultSubobject<UManaComponent>(TEXT("Mana"));
+
 	dashSkillComponent = CreateDefaultSubobject<UDashSkillComponent>(TEXT("Dash"));
 
 	doubleJumpSkillComponent = CreateDefaultSubobject<UDoublejumpSkillComponent>(TEXT("Double jump"));
+
 
 	m_defoultGravity = 0;
 }
@@ -48,17 +63,16 @@ void AMainPaperCharacter::BeginPlay()
 
 
 	m_defoultGravity = GetCharacterMovement()->GravityScale;
-	UE_LOG(LogTemp, Warning, TEXT("%f"), m_defoultGravity);
 
-	FVector scale = GetActorScale();
-	ToNormalize(scale.Normalize());
-	
-}
+	UArtifactUsedDataAsset* artifactDataAsset = GetOwner<AGamePlayerController>()->GetArtifactDataAsset();
+	m_rightActiveArtifact = &artifactDataAsset->rightArtifact.artifact;
+	m_leftActiveArtifact = &artifactDataAsset->leftArtifact.artifact;
 
-void AMainPaperCharacter::Tick(float deltaTime)
-{
-	Super::Tick(deltaTime);
-
+	for (auto& el : weaponsClass)
+	{
+		weapons.Add(el.Key, NewObject<UBaseWeapon>(this, el.Value.Get()));
+	}
+	activeWeapon = weapons[EWeaponType::SWORD];
 }
 
 
@@ -67,7 +81,7 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	Super::SetupPlayerInputComponent(inputComponent);
 
 	APlayerController* Player = Cast<APlayerController>(GetController());
-	if (Player != nullptr)
+	if (Player)
 	{
 		if (class UEnhancedInputLocalPlayerSubsystem* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player->GetLocalPlayer()))
 		{
@@ -86,9 +100,13 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
 
 	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
+	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopAttack);
 
-	enhuncedInput->BindAction(Input.useFirstArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseFirstArtifact);
-	enhuncedInput->BindAction(Input.useSecondArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseSecondArtifact);
+	enhuncedInput->BindAction(Input.useFirstArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseRightArtifact);
+	enhuncedInput->BindAction(Input.useSecondArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseLeftArtifact);
+
+	enhuncedInput->BindAction(Input.selectSword, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectSword);
+	enhuncedInput->BindAction(Input.selectBow, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectBow);
 }
 
 
@@ -129,43 +147,6 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 }
 
 
-UBaseArtifactComponent* AMainPaperCharacter::BindFirstArtifact(TSubclassOf<UBaseArtifactComponent> artifact)
-{
-	if (firstActiveArtifact != nullptr)
-	{
-		firstActiveArtifact->DestroyComponent(true);
-	}
-	if (IsValid(artifact))
-	{
-		firstActiveArtifact = NewObject<UBaseArtifactComponent>(this, artifact.Get());
-		firstActiveArtifact->RegisterComponent();
-	}
-	else
-	{
-		firstActiveArtifact = nullptr;
-	}
-
-	return firstActiveArtifact;
-}
-
-UBaseArtifactComponent* AMainPaperCharacter::BindSecondArtifact(TSubclassOf<UBaseArtifactComponent> artifact)
-{
-	if (secondActiveArtifact != nullptr)
-	{
-		secondActiveArtifact->DestroyComponent(true);
-	}
-	if (IsValid(artifact))
-	{
-		secondActiveArtifact = NewObject<UBaseArtifactComponent>(this, artifact.Get());
-		secondActiveArtifact->RegisterComponent();
-	}
-	else
-	{
-		secondActiveArtifact = nullptr;
-	}
-
-	return secondActiveArtifact;
-}
 
 void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride)
 {
@@ -174,35 +155,78 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 	GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Dash);
 }
 
+void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multiplier)
+{
+	switch (typeStat)
+	{
+	case ETypeScroll::MANA:
+		manaComponent->SetMaxMana(manaComponent->GetMana() * multiplier);
+		break;
+	case ETypeScroll::AGILITY:
+		statsComponent->SetTimeReloadAttack(statsComponent->GetTimeReloadAttack() * multiplier);
+		break;
+	case ETypeScroll::HEALTH:
+		healthComponent->SetMaxHP(healthComponent->GetMaxHP() * multiplier);
+		break;
+	default:
+		break;
+	}
+	improveStatDelegate.Broadcast(typeStat);
+}
 
 void AMainPaperCharacter::OnAttack()
 {
-	if (canAttack && !GetCharacterMovement()->IsFalling())
+	if (activeWeapon->GetCanAttack() && !GetCharacterMovement()->IsFalling())
 	{
-		if (!dashSkillComponent->GetIsDashing())
+		if (dashSkillComponent->GetIsDashing())
 		{
-			canAttack = false;
-			isAttacking = true;
-			GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Punch);
+			return;
+		}
+
+		activeWeapon->SetCanAttack(false);
+		activeWeapon->SetIsAttacking(true);
+
+
+		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()))
+		{
+			Cast<IDistanceWeapon>(activeWeapon)->StartAttack_Implementation();
+		}
+		else if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
+		{
+			GetAnimInstance()->JumpToNode(Anim.Punch);
 		}
 	}
 }
 
 void AMainPaperCharacter::OnAttackHit()
 {
-	TArray<AActor*> actorsIgnore;
-	TArray<FHitResult> res;
-	TSubclassOf<UDamageType> damageType;
-	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack * normalizeValues), capsuleRadiusAttack, capsuleHalfHeightAttack, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
-
-
-	for (auto& el : res)
+	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
 	{
-		UGameplayStatics::ApplyDamage(el.GetActor(), damage, GetInstigatorController(), this, damageType);
+		static IMeleeWeapon* meleeWeapon;
+		if (!meleeWeapon)
+		{
+			meleeWeapon = Cast<IMeleeWeapon>(activeWeapon);
+		}
+		activeWeapon->StartReload();
+		meleeWeapon->Attack_Implementation();
 	}
-	
-	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMainPaperCharacter::OnReloadAttack, timeReloadAttack, false);
+	//GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMainPaperCharacter::OnReloadAttack, statsComponent->GetTimeReloadAttack(), false);
 }
+
+void AMainPaperCharacter::StopAttack()
+{
+	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()))
+	{
+		static IDistanceWeapon* distanWeapon;
+		if (!distanWeapon)
+		{
+			distanWeapon = Cast<IDistanceWeapon>(activeWeapon);
+		}
+		activeWeapon->StartReload();
+		distanWeapon->StopAttack_Implementation();
+	}
+}
+
 
 void AMainPaperCharacter::OnDeath(AActor* deadActor)
 {
@@ -211,42 +235,54 @@ void AMainPaperCharacter::OnDeath(AActor* deadActor)
 	if (deadActor == this)
 	{
 		GetAnimInstance()->JumpToNode(Anim.Death);
-		DisableInput(GetController<APlayerController>());
+		InputDisable();
 	}
 
 }
 
-void AMainPaperCharacter::OnSpawn(AActor* spawnActor)
+void AMainPaperCharacter::UseRightArtifact()
 {
-	Super::OnSpawn(spawnActor);
-
-	if (spawnActor->StaticClass() == ASkeletonKing::StaticClass())
+	if (UKismetSystemLibrary::DoesImplementInterface(*m_rightActiveArtifact, UInteract::StaticClass()))
 	{
-		GetController<APlayerController>()->GetHUD<AHUDGame>()->EnableEnemyHealthStat(Cast<ABasePaperCharacter>(spawnActor)->GetHealthComponent());
+		if (!m_rightInteractArtifact)
+		{
+			m_rightInteractArtifact = Cast<IInteract>(*m_rightActiveArtifact);
+		}
+		m_rightInteractArtifact->Interact_Implementation(this);
 	}
 }
 
-
-void AMainPaperCharacter::UseFirstArtifact()
+void AMainPaperCharacter::UseLeftArtifact()
 {
-	if (UKismetSystemLibrary::DoesImplementInterface(firstActiveArtifact, UInteract::StaticClass()))
-		Cast<IInteract>(firstActiveArtifact)->Interact_Implementation(this);
+	if (UKismetSystemLibrary::DoesImplementInterface(*m_leftActiveArtifact, UInteract::StaticClass()))
+	{
+		if (!m_leftInteractArtifact)
+		{
+			m_leftInteractArtifact = Cast<IInteract>(*m_leftActiveArtifact);
+		}
+		m_leftInteractArtifact->Interact_Implementation(this);
+	}
 }
 
-void AMainPaperCharacter::UseSecondArtifact()
+void AMainPaperCharacter::SelectSword()
 {
-	if (UKismetSystemLibrary::DoesImplementInterface(secondActiveArtifact, UInteract::StaticClass()))
-		Cast<IInteract>(secondActiveArtifact)->Interact_Implementation(this);
+	SwitchWeapon(EWeaponType::SWORD);
 }
 
-void AMainPaperCharacter::ToNormalize(float normalizeVal)
+void AMainPaperCharacter::SelectBow()
 {
-	springArmComponent->TargetArmLength *= normalizeVal;
+	SwitchWeapon(EWeaponType::BOW);
+}
 
-	GetCharacterMovement()->MaxWalkSpeed *= normalizeVal;
-	GetCharacterMovement()->JumpZVelocity *= normalizeVal;
-
-	this->normalizeValues = normalizeVal;
+void AMainPaperCharacter::SwitchWeapon(const EWeaponType& type)
+{
+	if (type != activeWeapon->GetWeaponType())
+	{
+		if (weapons.Contains(type))
+		{
+			activeWeapon = weapons[type];
+		}
+	}
 }
 
 void AMainPaperCharacter::InputEnable()

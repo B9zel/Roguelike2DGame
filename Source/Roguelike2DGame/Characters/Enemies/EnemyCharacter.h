@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 {
 	GENERATED_BODY()
@@ -17,7 +17,16 @@ public:
 
 	AEnemyCharacter();
 	
-	//TArray<TEnumAsByte<EObjectTypeQuery>> GetBlockObjectPatrolling();
+
+	UFUNCTION(BlueprintCallable)
+	float GetDistanceAttack() { return distanceAttack; }
+
+	UFUNCTION(BlueprintCallable)
+	int GetDamage() { return damage; }
+
+
+	void SetDamage(int newDamage);
+	void SetDistanceAttack(float distance);
 
 	virtual void OnDeath(AActor* deadActor) override;
 
@@ -32,4 +41,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseInteraction> moneyInteract;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
+	int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float distanceAttack;
+
+	UPROPERTY(EditAnywhere)
+	float capsuleRadiusAttack;
+
+	UPROPERTY(EditAnywhere)
+	float capsuleHalfHeightAttack;
 };

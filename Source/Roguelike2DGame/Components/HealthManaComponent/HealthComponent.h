@@ -4,41 +4,43 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "HealthManaComponent.generated.h"
+#include "HealthComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthManaComponentDelegateOneParam, AActor*, instigatorDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthComponentDelegateOneParam, AActor*, instigatorDamage);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ROGUELIKE2DGAME_API UHealthManaComponent : public UActorComponent
+class ROGUELIKE2DGAME_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
-	UHealthManaComponent();
+
+	UHealthComponent();
+
+public:
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetCurrentHP();
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetMaxHP();
 
+	void SetCurrentHP(int32 newHP);
+	void SetMaxHP(int32 newMax);
+
 	bool GetIsDead();
 
-	void SetCurrentHP(int32 newHP);
-
 protected:
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 
 	UFUNCTION()
 	void OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
+
 	UPROPERTY(EditAnywhere)
 	int32 maxHealth;
 	UPROPERTY(EditAnywhere)
@@ -47,6 +49,7 @@ protected:
 	bool isDead;
 
 public:
+
 	UPROPERTY(BlueprintAssignable)
-	FHealthManaComponentDelegateOneParam takeDamageDelegate;
+	FHealthComponentDelegateOneParam takeDamageDelegate;
 };

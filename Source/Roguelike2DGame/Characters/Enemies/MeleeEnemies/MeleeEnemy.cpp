@@ -2,6 +2,9 @@
 
 
 #include "MeleeEnemy.h"
+#include "../../../Components/Stat/CharacterStatsComponent.h"
+
+
 #include <PaperZDAnimationComponent.h>
 #include <PaperZDAnimInstance.h>
 #include <Kismet/GameplayStatics.h>
@@ -25,11 +28,10 @@ float AMeleeEnemy::GetTimeStayPatrolling()
 	return timeStayInPatrolling;
 }
 
-
 void AMeleeEnemy::OnAttack()
 {
-	canAttack = false;
-	isAttacking = true;
+	statsComponent->SetCanAttack(false);
+	statsComponent->SetIsAttacking(true);
 	GetCharacterMovement()->SetActive(false);
 }
 
@@ -38,20 +40,19 @@ void AMeleeEnemy::OnAttackHit()
 	TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
-	if (UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * distanceAttack), 15, 35, targetEnums, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true))
+	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * GetDistanceAttack()),
+		capsuleRadiusAttack, capsuleHalfHeightAttack, GetTargetEnumsObject(), false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+	
+	for (auto& el : res)
 	{
-		for (auto& el : res)
-		{
-			UGameplayStatics::ApplyDamage(el.GetActor(), damage, GetInstigatorController(), this, damageType);
-		}
+		UGameplayStatics::ApplyDamage(el.GetActor(), GetDamage(), GetInstigatorController(), this, damageType);
 	}
 }
 
-void AMeleeEnemy::OnEndAttack()
+void AMeleeEnemy::OnEndAnimAttack()
 {
-	Super::OnEndAttack();
+	Super::OnEndAnimAttack();
 
 	GetCharacterMovement()->SetActive(true);
-	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, timeReloadAttack, false);
+	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, statsComponent->GetTimeReloadAttack(), false);
 }
-

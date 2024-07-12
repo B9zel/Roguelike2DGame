@@ -3,7 +3,7 @@
 #include "W_EnemyHealthPoints.h"
 #include <Components/ProgressBar.h>
 #include <Kismet/KismetMathLibrary.h>
-#include "../../../Components/HealthManaComponent/HealthManaComponent.h"
+#include "../../../Components/HealthManaComponent/HealthComponent.h"
 
 
 
@@ -30,7 +30,7 @@ const UProgressBar* UW_EnemyHealthPoints::GetHealthProgressBar()
 	return PB_Health;
 }
 
-void UW_EnemyHealthPoints::SetHealthComponentBind(UHealthManaComponent* component)
+void UW_EnemyHealthPoints::SetHealthComponentBind(UHealthComponent* component)
 {
 	healthBind = component;
 }

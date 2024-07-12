@@ -4,7 +4,9 @@
 #include "HUDGame.h"
 #include "../../UI/MainMenu/Game/W_GameMainMenu.h"
 #include "../../UI/HealthPoints/Enemy/W_EnemyHealthPoints.h"
-#include "../../Components/HealthManaComponent/HealthManaComponent.h"
+#include "../../Components/HealthManaComponent/HealthComponent.h"
+#include "../../UI/SelectArtifacts/W_MenuSelectArtifacts.h"
+
 
 
 AHUDGame::AHUDGame()
@@ -15,41 +17,13 @@ AHUDGame::AHUDGame()
 
 bool AHUDGame::ShowGameMainMenu(bool isShow,int zOrder)
 {
-	if (isShow)
-	{
-		if (mainMenuWidget == nullptr)
-			mainMenuWidget = CreateWidget<UW_GameMainMenu>(GetOwningPlayerController(), mainMenuClass);
-		mainMenuWidget->AddToViewport(zOrder);
-
-		return true;
-	}
-	else if (mainMenuWidget != nullptr)
-	{
-		mainMenuWidget->RemoveFromParent();
-
-		return true;
-	}
-	return false;
+	isShow ? enableWdiget.Broadcast(ETypeWidget::MAIN_MENU) : disableWdiget.Broadcast(ETypeWidget::MAIN_MENU);
+	return ShowWidget<UW_GameMainMenu>(isShow, mainMenuWidget, mainMenuClass, zOrder);
 }
 
-bool AHUDGame::EnableEnemyHealthStat(UHealthManaComponent* bindComponent)
+bool AHUDGame::ShowSelectArtifact(bool isShow, int zOrder)
 {
-	if (mainMenuWidget != nullptr)
-	{
-		mainMenuWidget->GetBossHeathStat()->SetHealthComponentBind(bindComponent);
-		mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Visible);
-		
-		return true;
-	}
-	return false;
+	isShow ? enableWdiget.Broadcast(ETypeWidget::SELECT_ARTIFACTS) : disableWdiget.Broadcast(ETypeWidget::SELECT_ARTIFACTS);
+	return ShowWidget<UW_MenuSelectArtifacts>(isShow, menuSelecArtifact, menuSelecArtifactClass, zOrder);
 }
 
-bool AHUDGame::DisableEnemyHealthStat()
-{
-	if (mainMenuWidget != nullptr)
-	{
-		mainMenuWidget->GetBossHeathStat()->SetVisibility(ESlateVisibility::Collapsed);
-		return true;
-	}
-	return false;
-}

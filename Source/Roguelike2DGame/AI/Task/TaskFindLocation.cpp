@@ -2,10 +2,12 @@
 
 
 #include "TaskFindLocation.h"
+#include "../../Controllers/Game/AI/Melee/BaseMeleeAIController.h"
+#include "../../Characters/Enemies/EnemyCharacter.h"
+#include "../../Components/Stat/CharacterStatsComponent.h"
+
 #include <Kismet/KismetSystemLibrary.h>
 #include <BehaviorTree/BlackboardComponent.h>
-#include "../../Controllers/Game/AI/Melee/BaseMeleeAIController.h"
-#include "../../Characters/BasePaperCharacter.h"
 
 
 EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -22,7 +24,7 @@ EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& Owner
 		TArray<AActor*> ignoreActors = { ownerController->GetPawn()};
 		TArray<FHitResult> res;
 
-		UKismetSystemLibrary::LineTraceMultiForObjects(ownerController->GetPawn(), startLocation, startLocation + endLocation, ownerController->GetPawn<ABasePaperCharacter>()->GetTargetEnumsObject(), true, ignoreActors, EDrawDebugTrace::ForDuration,res, true);
+		UKismetSystemLibrary::LineTraceMultiForObjects(ownerController->GetPawn(), startLocation, startLocation + endLocation, ownerController->GetPawn<AEnemyCharacter>()->GetTargetEnumsObject(), true, ignoreActors, EDrawDebugTrace::ForDuration,res, true);
 		
 		UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 		if (!res.IsEmpty())

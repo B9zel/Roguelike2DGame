@@ -41,3 +41,14 @@ void AEnemyCharacter::SwitchDirectionX()
 		SetActorRotation(FRotator(0.f, 180.f, 0.f));
 	}
 }
+
+
+void AEnemyCharacter::SetDistanceAttack(float distance)
+{
+	distanceAttack = distance < 0.0f ? 0.0f : distance;
+}
+
+void AEnemyCharacter::SetDamage(int newDamage)
+{
+	damage = newDamage < 0 ? 0 : newDamage;
+}

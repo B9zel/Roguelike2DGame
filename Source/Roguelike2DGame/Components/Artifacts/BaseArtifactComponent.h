@@ -15,5 +15,5 @@ class ROGUELIKE2DGAME_API UBaseArtifactComponent : public UActorComponent
 public:	
 
 	UBaseArtifactComponent();
-		
+	
 };

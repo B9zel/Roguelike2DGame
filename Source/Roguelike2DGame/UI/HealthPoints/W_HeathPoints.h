@@ -8,7 +8,9 @@
 
 
 class UProgressBar;
-class UHealthManaComponent;
+class UTextBlock;
+class UHealthComponent;
+class AMainPaperCharacter;
 
 
 UCLASS()
@@ -21,13 +23,27 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* PB_HealthPoints;
 
-	UHealthManaComponent* healthComponentOfCharacter;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TB_MaxHP;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TB_CurrentHP;
+
+	UPROPERTY()
+	UHealthComponent* healthComponentOfCharacter;
+
+	AMainPaperCharacter* ownerCharacter;
 
 protected:
 
 	virtual void NativeConstruct() override;
-	//UFUNCTION()
-	//float BindPercentHealthPoints();
-
 	
+	UFUNCTION()
+	void UpdateHealth(AActor* instigatorDamage);
+
+	UFUNCTION()
+	void ImproveOwnerCharacter(const ETypeScroll& typeImprove);
+
+	UFUNCTION()
+	void PostInit(AActor* actor);
 };

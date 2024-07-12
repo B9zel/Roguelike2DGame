@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ROGUELIKE2DGAME_API AMeleeEnemy : public AEnemyCharacter
 {
 	GENERATED_BODY()
@@ -20,14 +20,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetTimeStayPatrolling();
 
-
 protected:
 
 	virtual void OnAttack() override;
 
 	virtual void OnAttackHit() override;
 
-	virtual void OnEndAttack() override;
+	virtual void OnEndAnimAttack() override;
 
 
 protected:

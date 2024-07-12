@@ -18,6 +18,16 @@ class UDoublejumpSkillComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UBaseArtifactComponent;
+class UManaComponent;
+class UArtifactUsedDataAsset;
+class UBaseWeapon;
+class IInteract;
+enum class ETypeScroll : uint8;
+enum class EWeaponType : uint8;
+
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FImprove, const ETypeScroll&, scroll);
 
 
 USTRUCT(BlueprintType)
@@ -46,6 +56,14 @@ struct FCharacterInputAction
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* interact;
+	
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* selectSword;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* selectBow;
+	
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
@@ -81,53 +99,57 @@ public:
 
 	AMainPaperCharacter();
 	
+public:
+
+	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
+
 	void InputEnable();
-
 	void InputDisable();
-
 	float GetDefoultGravity() { return m_defoultGravity; }
 
 	template<class UserClass>
 	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
 
 	UFUNCTION(BlueprintCallable)
-	UBaseArtifactComponent* BindFirstArtifact(TSubclassOf<UBaseArtifactComponent> artifact);
-	UFUNCTION(BlueprintCallable)
-	UBaseArtifactComponent* BindSecondArtifact(TSubclassOf<UBaseArtifactComponent> artifact);
+	void ImproveStat(const ETypeScroll& typeStat, float mulripier);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UBaseWeapon* GetActiveWeapon() { return activeWeapon; }
 
-	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
+	UManaComponent* GetManaComponent() { return manaComponent; }
 
 protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* inputComponent) override;
-
 	virtual void BeginPlay() override;
-
-	virtual void Tick(float deltaTime) override;
-	
-	
 	virtual void OnJumped_Implementation() override;
-
 	virtual void OnWalkingOffLedge_Implementation(const FVector& PreviousFloorImpactNormal, const FVector& PreviousFloorContactNormal, const FVector& PreviousLocation, float TimeDelta) override;
 	
-	virtual void RightMove(const struct FInputActionInstance& instance);
 
+	virtual void RightMove(const struct FInputActionInstance& instance);
 
 	virtual void OnAttack() override;
 
 	virtual void OnAttackHit() override;
 
+	void StopAttack();
+
 	virtual void OnDeath(AActor* deadActor) override;
 
-	virtual void OnSpawn(AActor* spawnActor) override;
 
+	void UseRightArtifact();
 
-
-	virtual void UseFirstArtifact();
-
-	virtual void UseSecondArtifact();
+	void UseLeftArtifact();
 	
-	void ToNormalize(float normalizeVal);
+
+	// Change weapon
+	void SelectSword();
+	void SelectBow();
+
+	void SwitchWeapon(const EWeaponType& type);
+
+public:
+
+	FImprove improveStatDelegate;
 
 protected:
 
@@ -141,36 +163,36 @@ protected:
 	UDashSkillComponent* dashSkillComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UDoublejumpSkillComponent* doubleJumpSkillComponent;
+	UDoublejumpSkillComponent* doubleJumpSkillComponent;	
 
-	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* niagaraSystem;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UManaComponent* manaComponent;
 
 protected:
+
+	UPROPERTY()
+	UBaseWeapon* activeWeapon;
+
+	UPROPERTY(EditAnywhere)
+	TMap<EWeaponType, TSubclassOf<UBaseWeapon>> weaponsClass;
 	
-	// Game values
+	UPROPERTY()
+	TMap<EWeaponType, UBaseWeapon*> weapons;
+	
+
 	UPROPERTY(EditAnywhere)
 	FCharacterInputAction Input;
 	
 	UPROPERTY(EditAnywhere)
 	FCharacterAnimation Anim;
-	
-	
-	UPROPERTY(EditAnywhere)
-	float capsuleRadiusAttack;
-
-	UPROPERTY(EditAnywhere)
-	float capsuleHalfHeightAttack;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float normalizeValues;
-
-	UBaseArtifactComponent* firstActiveArtifact;
-
-	UBaseArtifactComponent* secondActiveArtifact;
 
 private:
+
+	UBaseArtifactComponent** m_rightActiveArtifact;
+	UBaseArtifactComponent** m_leftActiveArtifact;
+
+	IInteract* m_rightInteractArtifact;
+	IInteract* m_leftInteractArtifact;
 
 	float m_defoultGravity;
 };

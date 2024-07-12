@@ -8,22 +8,14 @@
 
 
 class AHUDGame;
-
-USTRUCT(BlueprintType)
-struct FArtifactUsed
-{
-	GENERATED_BODY()
-
-	class UBaseArtifactComponent* leftArtifactComponent;
-
-	class UBaseArtifactComponent* rightArtifactComponent;
-};
+class UArtifactUsedDataAsset;
 
 
 UCLASS()
 class ROGUELIKE2DGAME_API AGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
 public:
 
 	AGamePlayerController();
@@ -36,6 +28,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddMoney(int32 addMoney);
+
+
+	UFUNCTION(BlueprintCallable)
+	UBaseArtifactComponent* BindArtifact(const ESlotArtifact slot,const TSoftClassPtr<UBaseArtifactComponent> artifactBind);
+
+	UFUNCTION(BlueprintCallable)
+	void SetIconArtifact(const ESlotArtifact slot, UTexture2D* texture);
+
+	UArtifactUsedDataAsset* GetArtifactDataAsset() { return activeArtifacts; }
 
 protected:
 
@@ -50,6 +51,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
 	int32 money;
 
-	FArtifactUsed artifactUsed;
-
+	UPROPERTY(EditAnywhere)
+	UArtifactUsedDataAsset* activeArtifacts;
 };

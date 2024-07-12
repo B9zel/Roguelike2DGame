@@ -5,6 +5,9 @@
 #include "../../HUD/Game/HUDGame.h"
 #include "../../Components/Artifacts/BaseArtifactComponent.h"
 #include "../../InstanceGame.h"
+#include "../../Characters/MainCharacter/MainPaperCharacter.h"
+#include "../../Data/Enums/ESlotArtifact.h"
+#include "../../Data/DataAssets/ArtifactUsedDataAsset.h"
 
 #include <Kismet/GameplayStatics.h>
 
@@ -58,4 +61,39 @@ void AGamePlayerController::AddMoney(int32 addMoney)
 		return;
 	}
 	money += addMoney;
+}
+
+UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact slot, const TSoftClassPtr<UBaseArtifactComponent> artifactBind)
+{
+	const bool isLeftArtifact = slot == ESlotArtifact::LEFT_SLOT;
+	UBaseArtifactComponent** artifact = isLeftArtifact ? &activeArtifacts->leftArtifact.artifact : &activeArtifacts->rightArtifact.artifact;
+	
+
+	if ((*artifact))
+	{
+		(*artifact)->DestroyComponent(true);
+	}
+	if (artifactBind.IsValid())
+	{
+		*artifact = NewObject<UBaseArtifactComponent>(GetPawn(), artifactBind.Get());
+		(*artifact)->RegisterComponent();
+	}
+	else
+	{
+		*artifact = nullptr;
+	}
+
+	return *artifact;
+}
+
+void AGamePlayerController::SetIconArtifact(const ESlotArtifact slot, UTexture2D* texture)
+{
+	if (slot == ESlotArtifact::LEFT_SLOT)
+	{
+		activeArtifacts->leftArtifact.icon = texture;
+	}
+	else
+	{
+		activeArtifacts->rightArtifact.icon = texture;
+	}
 }

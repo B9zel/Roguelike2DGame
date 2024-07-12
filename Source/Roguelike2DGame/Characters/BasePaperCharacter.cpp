@@ -2,7 +2,8 @@
 
 
 #include "BasePaperCharacter.h"
-#include "../Components/HealthManaComponent/HealthManaComponent.h"
+#include "../Components/HealthManaComponent/HealthComponent.h"
+#include "../Components/Stat/CharacterStatsComponent.h"
 #include "../GameModes/Game/MainGameMode.h"
 
 #include <Kismet/GameplayStatics.h>
@@ -13,39 +14,15 @@
 
 ABasePaperCharacter::ABasePaperCharacter()
 {
-	healthComponent = CreateDefaultSubobject<UHealthManaComponent>(TEXT("Health and Mana component"));
+	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
-	//healthComponent->RegisterComponent();
+	
+	statsComponent = CreateDefaultSubobject<UCharacterStatsComponent>(TEXT("Stat component"));
 
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
-
-	damage = 1.f;
-	timeReloadAttack = 0.1f;
-	distanceAttack = 10;
-	isAttacking = false;
-	canAttack = true;
 }
 
-bool ABasePaperCharacter::GetIsAttacking()
-{
-	return isAttacking;
-}
-
-void ABasePaperCharacter::SetIsAttacking(bool attack)
-{
-	this->isAttacking = attack;
-}
-
-UHealthManaComponent* ABasePaperCharacter::GetHealthComponent()
-{
-	return healthComponent;
-}
-
-TArray<TEnumAsByte<EObjectTypeQuery>>& ABasePaperCharacter::GetTargetEnumsObject()
-{
-	return targetEnums;
-}
 
 void ABasePaperCharacter::BeginPlay()
 {
@@ -58,34 +35,13 @@ void ABasePaperCharacter::BeginPlay()
 	gameMode->OnSpawnActor(this);
 }
 
-void ABasePaperCharacter::OnAttack()
-{
-}
-
-void ABasePaperCharacter::OnAttackHit()
-{
-}
-
 void ABasePaperCharacter::OnReloadAttack()
 {
-	canAttack = true;
+	statsComponent->SetCanAttack(true);
 	reloadAttack.Broadcast();
 }
 
-void ABasePaperCharacter::OnEndAttack()
+void ABasePaperCharacter::OnEndAnimAttack()
 {
-	endAttack.Broadcast();
+	endAnimAttack.Broadcast();
 }
-
-void ABasePaperCharacter::OnTakePlayerDamage(AActor* instigatorDamage)
-{
-}
-
-void ABasePaperCharacter::OnDeath(AActor* deadActor)
-{
-}
-
-void ABasePaperCharacter::OnSpawn(AActor* deadActor)
-{
-}
-
