@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,10 +6,15 @@
 #include "BasePaperCharacter.generated.h"
 
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegateWithoutParam);
 
 
-UCLASS()
+class UCharacterStatsComponent;
+class UHealthComponent;
+
+
+UCLASS(Abstract)
 class ROGUELIKE2DGAME_API ABasePaperCharacter : public APaperZDCharacter
 {
 	GENERATED_BODY()
@@ -19,72 +23,61 @@ public:
 
 	ABasePaperCharacter();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetIsAttacking();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsAttacking(bool attack);
+public:	
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	class UHealthManaComponent* GetHealthComponent();
+	UHealthComponent* GetHealthComponent() { return healthComponent; }
 
-	TArray<TEnumAsByte<EObjectTypeQuery>>& GetTargetEnumsObject();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UCharacterStatsComponent* GetStatsComponent() { return statsComponent; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnAttack();
+	TArray<TEnumAsByte<EObjectTypeQuery>>& GetTargetEnumsObject() { return targetEnums; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnAttack() PURE_VIRTUAL(ABasePaperCharacter::OnAttack,);
 
 protected:
 
 	virtual void BeginPlay() override;
 
-
+	// Call in animation blueprint, when weapon hit with enemy
 	UFUNCTION(BlueprintCallable)
-	virtual void OnAttackHit();
+	virtual void OnAttackHit() PURE_VIRTUAL(ABasePaperCharacter::OnAttackHit, );
+
+	UFUNCTION()
+	virtual void OnTakePlayerDamage(AActor* instigatorDamage) {};
+
+	UFUNCTION()
+	virtual void OnDeath(AActor* deadActor) {}
+
+	UFUNCTION()
+	virtual void OnSpawn(AActor* deadActor) {}
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnReloadAttack();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnEndAttack();
+	virtual void OnEndAnimAttack();
 
-	UFUNCTION()
-	virtual void OnTakePlayerDamage(AActor* instigatorDamage);
-
-	UFUNCTION()
-	virtual void OnDeath(AActor* deadActor);
-
-	UFUNCTION()
-	virtual void OnSpawn(AActor* deadActor);
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int damage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UCharacterStatsComponent* statsComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float timeReloadAttack;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool canAttack;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float distanceAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* healthComponent;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TEnumAsByte<EObjectTypeQuery>> targetEnums;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UHealthManaComponent* healthComponent;
-	
 
 	FTimerHandle attackReloadTimer;
 
-	bool isAttacking;
-
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FBaseCharacterDelegateWithoutParam endAttack;
+	FBaseCharacterDelegateWithoutParam endAnimAttack;
 
 	UPROPERTY(BlueprintAssignable)
 	FBaseCharacterDelegateWithoutParam reloadAttack;
-
 };

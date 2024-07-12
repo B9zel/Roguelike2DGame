@@ -1,0 +1,13 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "ETypeScroll.generated.h"
+
+
+UENUM(BlueprintType)
+enum class ETypeScroll : uint8
+{
+	AGILITY = 0,
+	HEALTH,
+	MANA
+};

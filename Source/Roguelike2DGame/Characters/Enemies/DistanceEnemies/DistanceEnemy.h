@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class ROGUELIKE2DGAME_API ADistanceEnemy : public AEnemyCharacter
 {
 	GENERATED_BODY()

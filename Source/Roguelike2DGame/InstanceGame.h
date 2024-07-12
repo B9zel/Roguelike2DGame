@@ -17,22 +17,23 @@ class ROGUELIKE2DGAME_API UInstanceGame : public UGameInstance
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void AddArtifactClass(TSubclassOf<class UBaseArtifactComponent>& artifact);
+	void AddArtifactClass(TSoftClassPtr<class UBaseArtifactComponent> artifact);
 
-	UFUNCTION(BlueprintCallable)
-	void AddSkillClass(TSubclassOf<class UBaseSkillComponent>& skill);
+	//UFUNCTION(BlueprintCallable)
+	//void AddSkillClass(TSoftClassPtr<class UBaseSkillComponent>& skill);
 
 
-	UFUNCTION(BlueprintCallable, BLueprintPure)
-	const TArray<TSubclassOf<class UBaseArtifactComponent>>& GetOpenArtifacts() { return m_openArtifactsClass; }
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	const TArray<TSoftClassPtr<class UBaseArtifactComponent>>& GetOpenArtifacts() { return openArtifactsClass; }
 
-	UFUNCTION(BlueprintCallable, BLueprintPure)
-	const TArray<TSubclassOf<class UBaseSkillComponent>>& GetOpenSkills() { return m_openSkillsClass; }
+	//UFUNCTION(BlueprintCallable, BLueprintPure)
+	//const TArray<TSubclassOf<class UBaseSkillComponent>>& GetOpenSkills() { return m_openSkillsClass; }
 
 protected:
 
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class UBaseArtifactComponent>> m_openArtifactsClass;
-	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class UBaseSkillComponent>> m_openSkillsClass;
+	TArray<TSoftClassPtr<class UBaseArtifactComponent>> openArtifactsClass;
+	//UPROPERTY(EditAnywhere)
+	//TArray<TSoftClassPtr<class UBaseSkillComponent>> m_openSkillsClass;
+	
 };
