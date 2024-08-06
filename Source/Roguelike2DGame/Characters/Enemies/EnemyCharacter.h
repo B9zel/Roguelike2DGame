@@ -17,38 +17,49 @@ public:
 
 	AEnemyCharacter();
 	
-
-	UFUNCTION(BlueprintCallable)
-	float GetDistanceAttack() { return distanceAttack; }
-
-	UFUNCTION(BlueprintCallable)
-	int GetDamage() { return damage; }
-
-
-	void SetDamage(int newDamage);
-	void SetDistanceAttack(float distance);
-
-	virtual void OnDeath(AActor* deadActor) override;
+	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchDirectionX();
 
+
+
+	UFUNCTION(BlueprintCallable)
+	int GetSoulsDrop() { return countDropSouls; }
+	UFUNCTION(BlueprintCallable)
+	float GetDistanceAttack() { return distanceAttack; }
+	UFUNCTION(BlueprintCallable)
+	int GetDamage() { return damage; }
+	UFUNCTION(BlueprintCallable)
+	TArray<TEnumAsByte<EObjectTypeQuery>>& GetTypesAttackCollision() { return typesAttackCollision; }
+
+	void SetDamage(int newDamage);
+	void SetDistanceAttack(float distance);
+
 protected:
 
-	UPROPERTY(EditAnywhere, meta=(ClampMin="0"))
+	// Moneys
+	UPROPERTY(EditAnywhere, meta=(ClampMin="0", UIMin = "0"))
 	uint32 countDropMoney;
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseInteraction> moneyInteract;
 
+	// Soul
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
+	int countDropSouls;
+
+
+	// Attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	int damage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float distanceAttack;
 
 	UPROPERTY(EditAnywhere)
-	float capsuleRadiusAttack;
+	TArray<TEnumAsByte<EObjectTypeQuery>> typesAttackCollision;
 
+	UPROPERTY(EditAnywhere)
+	float capsuleRadiusAttack;
 	UPROPERTY(EditAnywhere)
 	float capsuleHalfHeightAttack;
 };

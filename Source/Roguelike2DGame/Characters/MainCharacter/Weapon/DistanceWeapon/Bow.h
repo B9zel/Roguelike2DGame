@@ -10,6 +10,9 @@
 
 
 
+class AArrow;
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API UBow : public UBaseDistanceWeapon
 {
@@ -22,11 +25,14 @@ public:
 public:
 
 	virtual void StartAttack_Implementation() override;
+	virtual void StopAttack_Implementation() override;
+
+	virtual bool DamageLevelUp() override;
+	virtual bool SpeedAttackLevelUp() override;
 
 protected:
 
-
-
-
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AArrow> projectileClass;
 
 };

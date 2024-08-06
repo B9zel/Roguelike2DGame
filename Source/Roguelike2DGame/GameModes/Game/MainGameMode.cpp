@@ -5,9 +5,9 @@
 #include <Kismet/KismetSystemLibrary.h>
 
 
-void AMainGameMode::OnDeathActor(AActor* deadActor)
+void AMainGameMode::OnDeathActor(AActor* deadActor, AActor* InstigatorActor)
 {
-	deathDeligate.Broadcast(deadActor);
+	deathDeligate.Broadcast(deadActor, InstigatorActor);
 }
 
 

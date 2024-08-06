@@ -19,23 +19,24 @@ USword::USword()
 	distanceAttack = 20;
 	capsuleRadiusAttack = 15;
 	capsuleHalfHeightAttack = 25;
+	timeReload = 0.5f;
 }
 
 void USword::Attack_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Sword attacl"));
+	SetIsReady(false);
+
 	const TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
 
 	const FVector actorLocation = GetOwner()->GetActorLocation();
-
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, actorLocation, actorLocation + (GetOwner()->GetActorForwardVector() * GetDistanceAttack()),
-		capsuleRadiusAttack, capsuleHalfHeightAttack, Cast<ABasePaperCharacter>(GetOwner())->GetTargetEnumsObject(), false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
-	
+		capsuleRadiusAttack, capsuleHalfHeightAttack, typesAttackCollision, false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+
 	for (auto& el : res)
 	{
-		UGameplayStatics::ApplyDamage(el.GetActor(), GetDamage(), GetOwner()->GetInstigatorController(), nullptr, damageType);
+		UGameplayStatics::ApplyDamage(el.GetActor(), GetDamage(), GetOwner()->GetInstigatorController(), GetOwner(), damageType);
 	}
 }
 
@@ -44,7 +45,23 @@ void USword::SetDistanceAttack(float distance)
 	distanceAttack = distance < 0.0f ? 0.0f : distance;
 }
 
-void USword::SetDamage(int newDamage)
+bool USword::DamageLevelUp()
 {
-	damage = newDamage < 0 ? 0 : newDamage;
+	if (Super::DamageLevelUp())
+	{
+		SetDamage(GetDamage() + levelUpDamage);
+		return true;
+	}
+	return false;
 }
+
+bool USword::SpeedAttackLevelUp()
+{
+	if (Super::SpeedAttackLevelUp())
+	{
+		SetTimeReload(GetTimeReload() - levelUpTimeReload);
+		return true;
+	}
+	return false;
+}
+

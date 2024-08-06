@@ -43,10 +43,10 @@ protected:
 
 	virtual void OnReloadAttack() override;
 
-	virtual void OnDeath(AActor* deadActor) override;
+	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
 
-	virtual void OnTakePlayerDamage(AActor* instigatorDamage) override;
-
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
 	void Destroyer();
 
 protected:

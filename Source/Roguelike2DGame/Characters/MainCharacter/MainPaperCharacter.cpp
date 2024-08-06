@@ -12,30 +12,30 @@
 #include "../../Components/HealthManaComponent/HealthComponent.h"
 #include "../../Components/HealthManaComponent/ManaComponent.h"
 #include "../../Components/Skills/DoublejumpSkillComponent.h"
+#include "../../Components/Skills/DashSkillComponent.h"
 #include "../../Components/Artifacts/BaseArtifactComponent.h"
 #include "../../Components/Stat/CharacterStatsComponent.h"
-#include "../../Components/Skills/DashSkillComponent.h"
 
 #include "../../Interfaces/Weapon/MeleeWeapon.h"
-#include "../../Interfaces/InteractInterface.h"
 #include "../../Interfaces/Weapon/DistanceWeapon.h"
-//#include "Weapon/DistanceWeapon/BaseDistanceWeapon.h"
-//#include "Weapon/MeleeWeapon/BaseMeleeWeapon.h"
+#include "../../Interfaces/Weapon/IReloadableWeapon.h"
+#include "../../Interfaces/InteractInterface.h"
+
 #include "Weapon/BaseWeapon.h"
 
+#include "../Enemies/EnemyCharacter.h"
 
-#include <GameFramework/SpringArmComponent.h>
+#include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
 #include <PaperZDAnimationComponent.h>
 #include <PaperZDAnimInstance.h>
-#include <Camera/CameraComponent.h>
-#include <Components/InputComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
-#include <Kismet/KismetSystemLibrary.h>
-#include <Kismet/GameplayStatics.h>
+#include <GameFramework/SpringArmComponent.h>
 #include <Components/CapsuleComponent.h>
+#include <Components/InputComponent.h>
+#include <Kismet/KismetSystemLibrary.h>
 #include <EnhancedInputSubsystems.h>
-
-
+#include <Kismet/GameplayStatics.h>
+#include <Camera/CameraComponent.h>
 
 
 
@@ -53,14 +53,12 @@ AMainPaperCharacter::AMainPaperCharacter()
 
 	doubleJumpSkillComponent = CreateDefaultSubobject<UDoublejumpSkillComponent>(TEXT("Double jump"));
 
-
 	m_defoultGravity = 0;
 }
 
 void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 	m_defoultGravity = GetCharacterMovement()->GravityScale;
 
@@ -70,9 +68,9 @@ void AMainPaperCharacter::BeginPlay()
 
 	for (auto& el : weaponsClass)
 	{
-		weapons.Add(el.Key, NewObject<UBaseWeapon>(this, el.Value.Get()));
+		AddNewWeapon(el.Key, el.Value);
 	}
-	activeWeapon = weapons[EWeaponType::SWORD];
+	activeWeapon = weaponsObj[EWeaponType::SWORD];
 }
 
 
@@ -146,8 +144,6 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 	}
 }
 
-
-
 void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride)
 {
 	Super::LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
@@ -162,9 +158,6 @@ void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multipl
 	case ETypeScroll::MANA:
 		manaComponent->SetMaxMana(manaComponent->GetMana() * multiplier);
 		break;
-	case ETypeScroll::AGILITY:
-		statsComponent->SetTimeReloadAttack(statsComponent->GetTimeReloadAttack() * multiplier);
-		break;
 	case ETypeScroll::HEALTH:
 		healthComponent->SetMaxHP(healthComponent->GetMaxHP() * multiplier);
 		break;
@@ -176,24 +169,23 @@ void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multipl
 
 void AMainPaperCharacter::OnAttack()
 {
-	if (activeWeapon->GetCanAttack() && !GetCharacterMovement()->IsFalling())
+	if (activeWeapon->GetCanAttack())
 	{
-		if (dashSkillComponent->GetIsDashing())
-		{
-			return;
-		}
+		if (dashSkillComponent->GetIsDashing())	return;
 
 		activeWeapon->SetCanAttack(false);
 		activeWeapon->SetIsAttacking(true);
 
 
-		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()))
+		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()) && !GetCharacterMovement()->IsFalling())
 		{
 			Cast<IDistanceWeapon>(activeWeapon)->StartAttack_Implementation();
+			GetCharacterMovement()->Deactivate();
+			GetAnimInstance()->JumpToNode(Anim.BowAttack);
 		}
 		else if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
 		{
-			GetAnimInstance()->JumpToNode(Anim.Punch);
+			GetAnimInstance()->JumpToNode(Anim.SwordAttack);
 		}
 	}
 }
@@ -202,42 +194,45 @@ void AMainPaperCharacter::OnAttackHit()
 {
 	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
 	{
-		static IMeleeWeapon* meleeWeapon;
-		if (!meleeWeapon)
+		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UReloadableWeapon::StaticClass()))
 		{
-			meleeWeapon = Cast<IMeleeWeapon>(activeWeapon);
+			Cast<IReloadableWeapon>(activeWeapon)->StartReload_Implementation();
 		}
-		activeWeapon->StartReload();
-		meleeWeapon->Attack_Implementation();
+		Cast<IMeleeWeapon>(activeWeapon)->Attack_Implementation();
 	}
-	//GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMainPaperCharacter::OnReloadAttack, statsComponent->GetTimeReloadAttack(), false);
 }
 
 void AMainPaperCharacter::StopAttack()
 {
 	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()))
-	{
-		static IDistanceWeapon* distanWeapon;
-		if (!distanWeapon)
+	{	
+		if (!activeWeapon->IsAttacking())
 		{
-			distanWeapon = Cast<IDistanceWeapon>(activeWeapon);
+			return;
 		}
-		activeWeapon->StartReload();
-		distanWeapon->StopAttack_Implementation();
+		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UReloadableWeapon::StaticClass()))
+		{
+			Cast<IReloadableWeapon>(activeWeapon)->StartReload_Implementation();
+		}
+		GetCharacterMovement()->Activate();
+		Cast<IDistanceWeapon>(activeWeapon)->StopAttack_Implementation();
 	}
 }
 
 
-void AMainPaperCharacter::OnDeath(AActor* deadActor)
+void AMainPaperCharacter::OnDeath(AActor* deadActor, AActor* InstigatorActor)
 {
-	Super::OnDeath(deadActor);
+	Super::OnDeath(deadActor, InstigatorActor);
 
 	if (deadActor == this)
 	{
 		GetAnimInstance()->JumpToNode(Anim.Death);
 		InputDisable();
 	}
-
+	else if (InstigatorActor == this)
+	{
+		GetActiveWeapon()->AddSouls(Cast<AEnemyCharacter>(deadActor)->GetSoulsDrop());
+	}
 }
 
 void AMainPaperCharacter::UseRightArtifact()
@@ -264,6 +259,25 @@ void AMainPaperCharacter::UseLeftArtifact()
 	}
 }
 
+void AMainPaperCharacter::SwitchWeapon(const EWeaponType& type)
+{
+	if (type != activeWeapon->GetWeaponType())
+	{
+		if (weaponsObj.Contains(type))
+		{
+			activeWeapon = weaponsObj[type];
+		}
+	}
+}
+
+void AMainPaperCharacter::AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<class UBaseWeapon> newWeapon)
+{
+	if (!weaponsObj.Contains(typeWeapon))
+	{
+		weaponsObj.Add(typeWeapon, NewObject<UBaseWeapon>(this, newWeapon.Get()));
+	}
+}
+
 void AMainPaperCharacter::SelectSword()
 {
 	SwitchWeapon(EWeaponType::SWORD);
@@ -274,22 +288,10 @@ void AMainPaperCharacter::SelectBow()
 	SwitchWeapon(EWeaponType::BOW);
 }
 
-void AMainPaperCharacter::SwitchWeapon(const EWeaponType& type)
-{
-	if (type != activeWeapon->GetWeaponType())
-	{
-		if (weapons.Contains(type))
-		{
-			activeWeapon = weapons[type];
-		}
-	}
-}
-
 void AMainPaperCharacter::InputEnable()
 {
 	EnableInput(GetController<APlayerController>());
 }
-
 
 void AMainPaperCharacter::InputDisable()
 {

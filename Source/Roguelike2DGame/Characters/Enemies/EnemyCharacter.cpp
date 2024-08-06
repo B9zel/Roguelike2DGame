@@ -2,8 +2,9 @@
 
 
 #include "EnemyCharacter.h"
-#include <GameFramework/CharacterMovementComponent.h>
 #include "../../Interact/BaseInteraction.h"
+
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 AEnemyCharacter::AEnemyCharacter()
@@ -11,22 +12,20 @@ AEnemyCharacter::AEnemyCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	countDropMoney = 5;
+	countDropSouls = 1;
 }
 
 
-
-
-void AEnemyCharacter::OnDeath(AActor* deadActor)
+void AEnemyCharacter::OnDeath(AActor* deadActor, AActor* InstigatorActor)
 {
-	Super::OnDeath(deadActor);
+	Super::OnDeath(deadActor, InstigatorActor);
 
 	if (deadActor != this)
 		return;
 
-	ABaseInteraction* act = nullptr;
 	for (size_t i = 0; i < countDropMoney; i++)
 	{
-		act = GetWorld()->SpawnActor<ABaseInteraction>(moneyInteract, GetActorLocation(), GetActorRotation());
+		GetWorld()->SpawnActor<ABaseInteraction>(moneyInteract, GetActorLocation(), GetActorRotation());
 	}
 }
 

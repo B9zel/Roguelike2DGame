@@ -14,17 +14,20 @@ EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& Owner
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	
+
 	ABaseMeleeAIController* ownerController = Cast<ABaseMeleeAIController>(OwnerComp.GetAIOwner());
 
-	if (ownerController != nullptr)
+	if (ownerController)
 	{
-		FVector startLocation = ownerController->GetPawn()->GetActorLocation();
-		FVector endLocation = ownerController->GetPawn()->GetActorForwardVector() * ownerController->GetDistancePatrolling();
-		TArray<AActor*> ignoreActors = { ownerController->GetPawn()};
+		AEnemyCharacter* ownerCharacter = ownerController->GetPawn<AEnemyCharacter>();
+
+		FVector startLocation = ownerCharacter->GetActorLocation();
+		FVector endLocation = ownerCharacter->GetActorForwardVector() * ownerController->GetDistancePatrolling();
+		TArray<AActor*> ignoreActors = { ownerCharacter };
 		TArray<FHitResult> res;
 
-		UKismetSystemLibrary::LineTraceMultiForObjects(ownerController->GetPawn(), startLocation, startLocation + endLocation, ownerController->GetPawn<AEnemyCharacter>()->GetTargetEnumsObject(), true, ignoreActors, EDrawDebugTrace::ForDuration,res, true);
+		UKismetSystemLibrary::LineTraceMultiForObjects(ownerCharacter, startLocation, startLocation + endLocation, ownerCharacter->GetTypesAttackCollision(),
+			true, ignoreActors, EDrawDebugTrace::ForDuration, res, true);
 		
 		UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 		if (!res.IsEmpty())
@@ -36,7 +39,6 @@ EBTNodeResult::Type UTaskFindLocation::ExecuteTask(UBehaviorTreeComponent& Owner
 			Blackboard->SetValueAsVector(locationProperty.SelectedKeyName, startLocation + endLocation);
 		}
 		
-
 		return EBTNodeResult::Succeeded;
 	}
 	return EBTNodeResult::Failed;

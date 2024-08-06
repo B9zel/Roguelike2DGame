@@ -18,7 +18,7 @@ class UOverlapInteract : public UInterface
 };
 
 
-class IInteract
+class ROGUELIKE2DGAME_API IInteract
 {
 	GENERATED_BODY()
 
@@ -30,7 +30,7 @@ public:
 };
 
 
-class IOverlapInteract
+class ROGUELIKE2DGAME_API IOverlapInteract
 {
 	GENERATED_BODY()
 

@@ -10,6 +10,8 @@
 #include "../../Data/DataAssets/ArtifactUsedDataAsset.h"
 
 #include <Kismet/GameplayStatics.h>
+#include <Blueprint/UserWidget.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 
@@ -18,13 +20,6 @@
 AGamePlayerController::AGamePlayerController()
 {
 	HUD = nullptr;
-}
-
-void AGamePlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	
 }
 
 void AGamePlayerController::OnPossess(APawn* newPawn)
@@ -36,11 +31,6 @@ void AGamePlayerController::OnPossess(APawn* newPawn)
 	{
 		HUD->ShowGameMainMenu(true);
 	}
-}
-
-int32 AGamePlayerController::GetMoney()
-{
-	return money;
 }
 
 void AGamePlayerController::SetMoney(int32 newMoney)
@@ -63,12 +53,11 @@ void AGamePlayerController::AddMoney(int32 addMoney)
 	money += addMoney;
 }
 
-UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact slot, const TSoftClassPtr<UBaseArtifactComponent> artifactBind)
+UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact slot, const TSoftClassPtr<UBaseArtifactComponent>& artifactBind)
 {
 	const bool isLeftArtifact = slot == ESlotArtifact::LEFT_SLOT;
 	UBaseArtifactComponent** artifact = isLeftArtifact ? &activeArtifacts->leftArtifact.artifact : &activeArtifacts->rightArtifact.artifact;
 	
-
 	if ((*artifact))
 	{
 		(*artifact)->DestroyComponent(true);
@@ -82,7 +71,6 @@ UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact 
 	{
 		*artifact = nullptr;
 	}
-
 	return *artifact;
 }
 
@@ -96,4 +84,31 @@ void AGamePlayerController::SetIconArtifact(const ESlotArtifact slot, UTexture2D
 	{
 		activeArtifacts->rightArtifact.icon = texture;
 	}
+}
+
+void AGamePlayerController::SetInputUIMode(UUserWidget* focusWidget)
+{
+	SetShowMouseCursor(true);
+
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus(focusWidget->TakeWidget());
+	SetInputMode(inputMode);
+}
+
+void AGamePlayerController::SetInputGameMode()
+{
+	SetShowMouseCursor(false);
+
+	FInputModeGameOnly inputMode;
+	SetInputMode(inputMode);
+}
+
+void AGamePlayerController::EnableCharacterMovement()
+{
+	GetCharacter()->GetCharacterMovement()->Activate();
+}
+
+void AGamePlayerController::DisableCharacterMovement()
+{
+	GetCharacter()->GetCharacterMovement()->Deactivate();
 }

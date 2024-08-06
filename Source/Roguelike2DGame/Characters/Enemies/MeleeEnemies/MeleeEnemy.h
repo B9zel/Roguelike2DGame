@@ -20,6 +20,24 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetTimeStayPatrolling();
 
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsAttacking() { return isAttacking; }
+
+	UFUNCTION(BlueprintCallable)
+	float GetTimeReloadAttack() { return timeReloadAttack; }
+	UFUNCTION(BlueprintCallable)
+	bool GetCanAttack() { return canAttack; }
+
+
+	UFUNCTION(BlueprintCallable)
+	void SetTimeReloadAttack(float time);
+	UFUNCTION(BlueprintCallable)
+	void SetIsAttacking(bool attack) { isAttacking = attack; }
+	UFUNCTION(BlueprintCallable)
+	void SetCanAttack(bool isAttack) { canAttack = isAttack; }
+
 protected:
 
 	virtual void OnAttack() override;
@@ -33,6 +51,15 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float timeStayInPatrolling;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float timeReloadAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool canAttack;
+
+	bool isAttacking;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

@@ -10,6 +10,7 @@
 #include "MainPaperCharacter.generated.h"
 
 
+
 class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
@@ -22,12 +23,12 @@ class UManaComponent;
 class UArtifactUsedDataAsset;
 class UBaseWeapon;
 class IInteract;
+class UReloadableWeapon;
 enum class ETypeScroll : uint8;
 enum class EWeaponType : uint8;
 
-
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FImprove, const ETypeScroll&, scroll);
+
 
 
 USTRUCT(BlueprintType)
@@ -35,35 +36,26 @@ struct FCharacterInputAction
 {
 	GENERATED_BODY()
 
+public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* actionRun;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* actionJump;
-	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* actionDash;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* actionAttack;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* useFirstArtifact;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* useSecondArtifact;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* interact;
-	
-	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* selectSword;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* selectBow;
-	
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
@@ -75,16 +67,16 @@ struct FCharacterAnimation
 {
 	GENERATED_BODY()
 
+public:
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName Jump;
-
 	UPROPERTY(EditAnywhere, Category = "Anim")
-	FName Punch;
-
+	FName SwordAttack;
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName BowAttack;
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName Dash;
-
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName Death;
 };
@@ -105,17 +97,26 @@ public:
 
 	void InputEnable();
 	void InputDisable();
-	float GetDefoultGravity() { return m_defoultGravity; }
-
-	template<class UserClass>
-	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
 
 	UFUNCTION(BlueprintCallable)
 	void ImproveStat(const ETypeScroll& typeStat, float mulripier);
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UBaseWeapon* GetActiveWeapon() { return activeWeapon; }
 
-	UManaComponent* GetManaComponent() { return manaComponent; }
+	template<class UserClass>
+	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
+	
+	//Getters
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		UBaseWeapon* GetActiveWeapon() const { return activeWeapon; }
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		TMap<EWeaponType, UBaseWeapon*>& GetWeapons()  { return weaponsObj; }
+
+	UFUNCTION(BlueprintCallable)
+	void AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<UBaseWeapon> newWeapon);
+
+	UFUNCTION()
+		UManaComponent* GetManaComponent() { return manaComponent; }
+	UFUNCTION()
+		float GetDefoultGravity() { return m_defoultGravity; }
 
 protected:
 
@@ -126,25 +127,18 @@ protected:
 	
 
 	virtual void RightMove(const struct FInputActionInstance& instance);
-
 	virtual void OnAttack() override;
-
 	virtual void OnAttackHit() override;
+	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
 
 	void StopAttack();
 
-	virtual void OnDeath(AActor* deadActor) override;
-
-
 	void UseRightArtifact();
-
 	void UseLeftArtifact();
-	
 
 	// Change weapon
 	void SelectSword();
 	void SelectBow();
-
 	void SwitchWeapon(const EWeaponType& type);
 
 public:
@@ -158,13 +152,10 @@ protected:
 	USpringArmComponent* springArmComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UCameraComponent* cameraComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UDashSkillComponent* dashSkillComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UDoublejumpSkillComponent* doubleJumpSkillComponent;	
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UManaComponent* manaComponent;
 
@@ -175,14 +166,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TMap<EWeaponType, TSubclassOf<UBaseWeapon>> weaponsClass;
-	
 	UPROPERTY()
-	TMap<EWeaponType, UBaseWeapon*> weapons;
+	TMap<EWeaponType, UBaseWeapon*> weaponsObj;
 	
-
 	UPROPERTY(EditAnywhere)
 	FCharacterInputAction Input;
-	
 	UPROPERTY(EditAnywhere)
 	FCharacterAnimation Anim;
 

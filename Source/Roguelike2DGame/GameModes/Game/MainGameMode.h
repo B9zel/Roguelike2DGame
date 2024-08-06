@@ -7,7 +7,9 @@
 #include "MainGameMode.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMainGameModeDelegateTwoParam, AActor*, actor, AActor*, Instigator);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMainGameModeDelegateOneParam, AActor*, actor);
+
 
 UCLASS()
 class ROGUELIKE2DGAME_API AMainGameMode : public AGameModeBase
@@ -15,11 +17,11 @@ class ROGUELIKE2DGAME_API AMainGameMode : public AGameModeBase
 	GENERATED_BODY()
 public:
 
-	void OnDeathActor(AActor* deadActor);
+	void OnDeathActor(AActor* deadActor, AActor* Instigator);
 
 	void OnSpawnActor(AActor* spawnActor);
 
 public:
-	FMainGameModeDelegateOneParam deathDeligate;
+	FMainGameModeDelegateTwoParam deathDeligate;
 	FMainGameModeDelegateOneParam spawnDeligate;
 };

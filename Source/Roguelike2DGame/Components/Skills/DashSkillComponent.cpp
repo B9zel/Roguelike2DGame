@@ -33,8 +33,8 @@ void UDashSkillComponent::BeginPlay()
 	
 	if (m_DashNiagaraComponent)
 	{
-	m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
-}
+		m_DashNiagaraComponent->SetFloatParameter("NiagaraTime", timeDash);
+	}
 }
 
 

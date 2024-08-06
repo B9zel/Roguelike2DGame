@@ -6,8 +6,8 @@
 #include "../Components/Stat/CharacterStatsComponent.h"
 #include "../GameModes/Game/MainGameMode.h"
 
-#include <Kismet/GameplayStatics.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 
 
@@ -15,10 +15,10 @@
 ABasePaperCharacter::ABasePaperCharacter()
 {
 	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
-	healthComponent->takeDamageDelegate.AddDynamic(this, &ABasePaperCharacter::OnTakePlayerDamage);
 	
 	statsComponent = CreateDefaultSubobject<UCharacterStatsComponent>(TEXT("Stat component"));
 
+	//Restriction on movement along the Y axis
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 }
@@ -37,7 +37,6 @@ void ABasePaperCharacter::BeginPlay()
 
 void ABasePaperCharacter::OnReloadAttack()
 {
-	statsComponent->SetCanAttack(true);
 	reloadAttack.Broadcast();
 }
 

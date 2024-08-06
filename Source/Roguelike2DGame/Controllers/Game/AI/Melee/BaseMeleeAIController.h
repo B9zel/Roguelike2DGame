@@ -20,7 +20,6 @@ public:
 
 	//UFUNCTION(BlueprintCallable, BlueprintPure)
 	//const class AMeleeEnemy* GetControlledCharacter();
-
 	
 	FVector GetDistancePatrolling();
 
@@ -39,7 +38,8 @@ protected:
 	void OnAttckCharacter();
 
 	UFUNCTION()
-	virtual void OnDeathControlledCharacter(AActor* actor);
+	virtual void OnDeathControlledCharacter(AActor* actor, AActor* instigatorActor);
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -65,7 +65,5 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FVector distancePatrolling;
-
-
 
 };

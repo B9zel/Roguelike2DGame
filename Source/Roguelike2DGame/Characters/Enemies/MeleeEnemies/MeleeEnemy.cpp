@@ -30,10 +30,13 @@ float AMeleeEnemy::GetTimeStayPatrolling()
 
 void AMeleeEnemy::OnAttack()
 {
-	statsComponent->SetCanAttack(false);
-	statsComponent->SetIsAttacking(true);
+	SetCanAttack(false);
+	SetIsAttacking(true);
 	GetCharacterMovement()->SetActive(false);
 }
+
+
+
 
 void AMeleeEnemy::OnAttackHit()
 {
@@ -41,7 +44,7 @@ void AMeleeEnemy::OnAttackHit()
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(this, GetActorLocation(), GetActorLocation() + (GetActorForwardVector() * GetDistanceAttack()),
-		capsuleRadiusAttack, capsuleHalfHeightAttack, GetTargetEnumsObject(), false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
+		capsuleRadiusAttack, capsuleHalfHeightAttack, GetTypesAttackCollision(), false, actorsIgnore, EDrawDebugTrace::ForDuration, res, true);
 	
 	for (auto& el : res)
 	{
@@ -54,5 +57,10 @@ void AMeleeEnemy::OnEndAnimAttack()
 	Super::OnEndAnimAttack();
 
 	GetCharacterMovement()->SetActive(true);
-	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, statsComponent->GetTimeReloadAttack(), false);
+	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, GetTimeReloadAttack(), false);
+}
+
+void AMeleeEnemy::SetTimeReloadAttack(float time)
+{
+	timeReloadAttack = time < 0.0f ? 0.0f : time;
 }

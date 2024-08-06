@@ -76,7 +76,7 @@ void UHealthComponent::OnPlayerTakeAnyDamage(AActor* DamagedActor, float Damage,
 	if (currentHealth == 0 && !isDead)
 	{
 		isDead = true;
-		Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->OnDeathActor(GetOwner());
+		Cast<AMainGameMode>(UGameplayStatics::GetGameMode(this))->OnDeathActor(GetOwner(), DamageCauser);
 	}
 }
 
