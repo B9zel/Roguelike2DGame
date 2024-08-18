@@ -4,7 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "../../Data/ResourceLoader.h"
+#include <Runtime/UMG/Public/Blueprint/UserWidget.h>
 #include "HUDGame.generated.h"
+
+
+
+
+class UUserWidget;
+class UW_GameMainMenu;
+class UW_MenuSelectArtifacts;
+class UHealthComponent;
+class UW_MenuWeaponImprove;
+class UResourceLoader;
+
+struct LoaderHandle;
 
 
 UENUM(BlueprintType)
@@ -15,14 +29,10 @@ enum class ETypeWidget : uint8
 	WEAPON_IMPROVE_MENU
 };
 
-class UUserWidget;
-class UW_GameMainMenu;
-class UW_MenuSelectArtifacts;
-class UHealthComponent;
-class UW_MenuWeaponImprove;
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSwitchDispatch, const ETypeWidget&, widget);
+
+DECLARE_LOG_CATEGORY_CLASS(HUD, Display, Display);
 
 
 
@@ -46,57 +56,45 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UW_MenuWeaponImprove* ShowWeaponImprove(const bool isShow,const int zOrder = 0);
 
+protected:
+
+	virtual void BeginPlay() override;
+
 private:
 
-	template<class T,class U>
-	bool CreateUserWidget(TObjectPtr<T>& inWidget, const TSubclassOf<U>& widgetClass, const bool isReset=false)
+	template<class T>
+	bool CreateUserWidget(T** inWidget, UClass* widgetClass, const bool isReset=false)
 	{
-		if (!inWidget || isReset)
+		if (!(*inWidget) || isReset)
 		{
-			RemoveWidget(inWidget);
-			inWidget = CreateWidget<T>(GetOwningPlayerController(), widgetClass.Get());
+			RemoveWidget(*inWidget);
+			*inWidget = CreateWidget<T>(GetOwningPlayerController(), widgetClass);
+
 			return true;
 		}
 		return false;
 	}
 
+	template<class T>
+	bool SwitchWidget(const bool isShow, T** inWidget, UClass* widgetClass,const int zOrder)
+	{
+		if (!widgetClass)return false;
+
+		CreateUserWidget<T>(inWidget, widgetClass);
+		return isShow ? ShowWidget(*inWidget, zOrder) : RemoveWidget(*inWidget);
+	}
 	/* @return true if can show a widget */
-	template<class T>
-	bool ShowWidget(const TObjectPtr<T>& widget,const int zOrder=0)
-	{
-		if (widget)
-		{
-			widget->AddToViewport(zOrder);
-			return true;
-		}
-		return false;
-	}
+	bool ShowWidget(UUserWidget* widget, const int zOrder = 0);
+
 	/* @return true if can remove a widget */
-	template<class T>
-	bool RemoveWidget(const TObjectPtr<T>& widget)
-	{
-		if (widget)
-		{
-			widget->RemoveFromParent();
-			return true;
-		}
-		return false;
-	}
-	template<class T, class U=T>
-	bool SwitchWidget(const bool isShow, TObjectPtr<T>& inWidget,const TSubclassOf<U>& widgetClass,const int zOrder)
-	{
-		CreateUserWidget(inWidget, widgetClass);
-		return isShow ? ShowWidget(inWidget, zOrder) : RemoveWidget(inWidget);
-	}
+	bool RemoveWidget(UUserWidget* widget);
+	
+	void LoadWidgetClass(const ETypeWidget& widget);
+
+	UClass* GetLoadedWidget(const ETypeWidget& widget);
+
 
 public:
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UW_GameMainMenu> mainMenuClass;
-	UPROPERTY(EditAnywhere)
-	TSoftClassPtr<UW_MenuSelectArtifacts> menuSelecArtifactClass;
-	UPROPERTY(EditAnywhere)
-	TSoftClassPtr<UW_MenuWeaponImprove> menuWeaponImproveClass;
 
 	UPROPERTY(BlueprintAssignable)
 	FSwitchDispatch enableWdiget;
@@ -105,12 +103,26 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	TSoftClassPtr<UW_GameMainMenu> mainMenuClass;
+	UPROPERTY(EditAnywhere)
+	TSoftClassPtr<UW_MenuSelectArtifacts> menuSelecArtifactClass;
+	UPROPERTY(EditAnywhere)
+	TSoftClassPtr<UW_MenuWeaponImprove> menuWeaponImproveClass;
+
+
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UW_GameMainMenu> mainMenuWidget;
+	UW_GameMainMenu* mainMenuWidget;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UW_MenuSelectArtifacts> menuSelecArtifact;
+	UW_MenuSelectArtifacts* menuSelecArtifact;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UW_MenuWeaponImprove> menuWeaponImprove;
+	UW_MenuWeaponImprove* menuWeaponImprove;
+
+	TMap<ETypeWidget, LoaderHandle> cashWidget;
+
+private:
+
+	class UInstanceGame* m_Instance;
 };
 
 

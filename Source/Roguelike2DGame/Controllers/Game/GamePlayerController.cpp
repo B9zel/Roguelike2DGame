@@ -88,6 +88,8 @@ void AGamePlayerController::SetIconArtifact(const ESlotArtifact slot, UTexture2D
 
 void AGamePlayerController::SetInputUIMode(UUserWidget* focusWidget)
 {
+	if (!focusWidget) return;
+
 	SetShowMouseCursor(true);
 
 	FInputModeUIOnly inputMode;
