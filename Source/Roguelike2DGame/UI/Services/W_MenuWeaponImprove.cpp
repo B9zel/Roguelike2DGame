@@ -11,9 +11,10 @@ FReply UW_MenuWeaponImprove::NativeOnKeyDown(const FGeometry& InGeometry, const 
 {
 	FReply res = Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 
-	if (InKeyEvent.GetKey() == keyExit)
+	if (keyExit != InKeyEvent.GetKey()) return res;
+
+	if (auto* owningController = GetOwningPlayer<AGamePlayerController>())
 	{
-		AGamePlayerController* owningController = GetOwningPlayer<AGamePlayerController>();
 		owningController->GetHUD<AHUDGame>()->ShowWeaponImprove(false);
 		owningController->SetInputGameMode();
 		owningController->EnableCharacterMovement();

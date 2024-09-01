@@ -2,124 +2,141 @@
 
 
 #include "ResourceLoader.h"
-#include <Engine/AssetManager.h>
 #include <Runtime/Engine/Classes/Engine/World.h>
 #include <Kismet/GameplayStatics.h>
+#include <Engine/AssetManager.h>
 #include <Async/AsyncWork.h>
 
 
-uint64 UResourceLoader::IDCounter = 0;
-TUniquePtr<UResourceLoader> UResourceLoader::m_Instance = nullptr;
+
+TUniquePtr<ResourceLoader> ResourceLoader::m_Instance = nullptr;
 
 
-UResourceLoader* UResourceLoader::Create(UObject* outer)
+ResourceLoader* ResourceLoader::Create()
 {
 	if (!m_Instance.IsValid())
 	{
-		if (UResourceLoader* buffer = NewObject<UResourceLoader>(outer))
+		ResourceLoader* buffer = new ResourceLoader();
+		if (buffer)
 		{
 			m_Instance.Reset(buffer);
 		}
 		else
 		{
-			UE_LOG(ResourceLoad, Display, TEXT("Can't create \"ResourceLoader\""))
+			UE_LOG(LogResourceLoad, Display, TEXT("Can't create \"ResourceLoader\""))
 			return nullptr;
 		}
 	}
 
-	
 	return m_Instance.Get();
 }
 
-LoaderHandle& UResourceLoader::ResourceAsyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream, FStreamableDelegate DelegateToCall)
+LoaderHandle& ResourceLoader::ResourceAsyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream, FStreamableDelegate DelegateToCall)
 {
-	if (!TargetToStream.IsValid())
+	if (TargetToStream.IsNull())
 	{
-		UE_LOG(ResourceLoad, Display, TEXT("SoftObjectPath is not valid"));
+		UE_LOG(LogResourceLoad, Display, TEXT("SoftObjectPath is null"));
 		return handle;
 	}
 
-	const TUniquePtr<UResourceLoader>& instance = UResourceLoader::GetLoaderInstance();
+	const TUniquePtr<ResourceLoader>& instance = ResourceLoader::GetLoaderInstance();
 	FScopeLock lock(&instance->m_Mutex);
 
 	if (UAssetManager::IsInitialized())
 	{
-		const uint64 newID = instance->GetID();
-		
-		TSharedPtr<FStreamableHandle> loadResource = UAssetManager::GetStreamableManager().RequestAsyncLoad(TargetToStream, FStreamableDelegate::CreateUObject(instance.Get(), &UResourceLoader::OnLoader));
-		instance->streamableloading.Emplace(loadResource);
-	
-		instance->streamableHandler.Add(newID, loadResource);
-		handle.id = newID;
+		TSharedPtr<FStreamableHandle> loadResource = UAssetManager::GetStreamableManager().RequestAsyncLoad(TargetToStream, FStreamableDelegate::CreateRaw(instance.Get(), &ResourceLoader::OnLoader));
+		instance->streamableLoading.Add(loadResource, &handle);
 	}
 
 	return handle;
 }
 
-LoaderHandle& UResourceLoader::ResourceSyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream)
+LoaderHandle& ResourceLoader::ResourceSyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream)
 {
-	if (!TargetToStream.IsValid())
+	if (TargetToStream.IsNull())
 	{
-		UE_LOG(ResourceLoad, Display, TEXT("SoftObjectPath is not valid"));
+		UE_LOG(LogResourceLoad, Display, TEXT("SoftObjectPath is null"));
 		return handle;
 	}
 
 	if (UAssetManager::IsInitialized())
 	{
-		const TUniquePtr<UResourceLoader>& instance = UResourceLoader::GetLoaderInstance();
-		const uint64 newID = instance->GetID();
+		const TUniquePtr<ResourceLoader>& instance = ResourceLoader::GetLoaderInstance();
 
 		TSharedPtr<FStreamableHandle> loadResource = UAssetManager::GetStreamableManager().RequestSyncLoad(TargetToStream);
 
 		if (loadResource->HasLoadCompleted())
 		{
+			uint64 newID = instance->GetID();
 			instance->streamableHandler.Add(newID, loadResource);
+			handle.id = newID;
 		}
-		handle.id = newID;
 	}
 	return handle;
 }
 
-
-const TUniquePtr<UResourceLoader>& UResourceLoader::GetLoaderInstance()
-{
-	return m_Instance;
-}
-
-UObject* UResourceLoader::GetData(const LoaderHandle handler)
+UObject* ResourceLoader::GetData(const LoaderHandle handler)
 {
 	if (!m_Instance) return nullptr;
 
 	if (handler.IsValid())
 	{
-		return UResourceLoader::GetLoaderInstance()->streamableHandler.Find(handler.id)->Get()->GetLoadedAsset();
+		return ResourceLoader::GetLoaderInstance()->streamableHandler.Find(handler.id)->Get()->GetLoadedAsset();
 	}
 
 	return nullptr;
 }
 
-void UResourceLoader::OnLoader()
+void ResourceLoader::ClearData()
+{
+	if (!streamableHandler.IsEmpty())
+	{
+		streamableHandler.Empty();
+	}
+	if (!streamableLoading.IsEmpty())
+	{
+		streamableLoading.Empty();
+	}
+}
+
+void ResourceLoader::OnLoader()
 {	
 	FScopeLock lock(&m_Mutex);
 
 	TArray<TSharedPtr<FStreamableHandle>> deleteElements;
-	for (auto& handler : streamableloading)
+	for (auto& handler : streamableLoading)
 	{
-		if (handler->HasLoadCompleted())
+		if (handler.Key->HasLoadCompleted())
 		{
-			OnLoadDelegate.Broadcast(handler->GetLoadedAsset());
-			deleteElements.Emplace(handler);
+			uint64 newID = GetID();
+
+			handler.Value->id = newID;
+			streamableHandler.Add(newID, handler.Key);
+
+			OnLoadDelegate.Broadcast(handler.Key->GetLoadedAsset());
+			deleteElements.Add(handler.Key);
 		}
 	}
 
 	for (auto& handler : deleteElements)
 	{
-		streamableloading.Remove(handler);
+		streamableLoading.Remove(handler);
 	}
-	deleteElements.Empty();
 }
 
-uint64 UResourceLoader::GetID()
+
+void ResourceLoader::DestroyLoader()
+{
+	ClearData();
+	m_Instance.Reset();
+}
+
+uint64 ResourceLoader::GetID()
 {
 	return ++IDCounter;
+}
+
+const TUniquePtr<ResourceLoader>& ResourceLoader::GetLoaderInstance()
+{
+	return m_Instance;
 }

@@ -5,24 +5,25 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Engine/StreamableManager.h"
-#include "ResourceLoader.generated.h"
+
 
 
 
 class UObject;
-class UResourceLoader;
+class ResourceLoader;
 
 struct FStreamableHandle;
 
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FLoaderDelegate, UObject*);
-DECLARE_LOG_CATEGORY_CLASS(ResourceLoad, Display, Display);
+DECLARE_LOG_CATEGORY_CLASS(LogResourceLoad, Display, Display);
 
 
 struct LoaderHandle
 {
 public:
 
-	friend UResourceLoader;
+	friend ResourceLoader;
 
 public:
 
@@ -39,23 +40,23 @@ private:
 };
 
 
-UCLASS()
-class ROGUELIKE2DGAME_API UResourceLoader : public UObject
+class ROGUELIKE2DGAME_API ResourceLoader
 {
-
-	GENERATED_BODY()
 
 public:
 	
-	static UResourceLoader* Create(UObject* outer);
+	static ResourceLoader* Create();
 	static LoaderHandle& ResourceAsyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream, FStreamableDelegate DelegateToCall);
 	static LoaderHandle& ResourceSyncLoad(LoaderHandle& handle, const FSoftObjectPath& TargetToStream);
-	static const TUniquePtr<UResourceLoader>& GetLoaderInstance();
+	static const TUniquePtr<ResourceLoader>& GetLoaderInstance();
 	static UObject* GetData(const LoaderHandle handler);
+
+	void ClearData();
+	void DestroyLoader();
 
 private:
 
-	UResourceLoader() = default;
+	ResourceLoader() = default;
 
 private:
 
@@ -64,15 +65,16 @@ private:
 
 private:
 
+
 	FLoaderDelegate OnLoadDelegate;
 	
-	
 	TMap<uint64, TSharedPtr<FStreamableHandle>> streamableHandler;
-	TArray<TSharedPtr<FStreamableHandle>> streamableloading;
-
-	static uint64 IDCounter;
-	static TUniquePtr<UResourceLoader> m_Instance;
-
+	// Used for async load
+	TMap<TSharedPtr<FStreamableHandle>, LoaderHandle*> streamableLoading;
+	//
+	uint64 IDCounter;
 	FCriticalSection m_Mutex;
+
+	static TUniquePtr<ResourceLoader> m_Instance;
 };
 

@@ -3,7 +3,9 @@
 
 #include "TaskAttackEnemy.h"
 #include "../../Characters/BasePaperCharacter.h"
+
 #include <AIController.h>
+
 
 
 EBTNodeResult::Type UTaskAttackEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -11,7 +13,7 @@ EBTNodeResult::Type UTaskAttackEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerC
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
     ABasePaperCharacter* character = Cast<ABasePaperCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-    if (character != nullptr)
+    if (character)
     {
         character->OnAttack();
         return EBTNodeResult::Succeeded;

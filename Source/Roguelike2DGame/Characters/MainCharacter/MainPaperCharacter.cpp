@@ -64,12 +64,14 @@ void AMainPaperCharacter::BeginPlay()
 
 	UArtifactUsedDataAsset* artifactDataAsset = GetOwner<AGamePlayerController>()->GetArtifactDataAsset();
 	m_rightActiveArtifact = &artifactDataAsset->rightArtifact.artifact;
-	m_leftActiveArtifact = &artifactDataAsset->leftArtifact.artifact;
+	m_leftActiveArtifact =	&artifactDataAsset->leftArtifact.artifact;
 
 	for (auto& el : weaponsClass)
 	{
 		AddNewWeapon(el.Key, el.Value);
 	}
+
+	check(weaponsObj.Contains(EWeaponType::SWORD));
 	activeWeapon = weaponsObj[EWeaponType::SWORD];
 }
 
@@ -81,11 +83,15 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 	APlayerController* Player = Cast<APlayerController>(GetController());
 	if (Player)
 	{
-		if (class UEnhancedInputLocalPlayerSubsystem* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player->GetLocalPlayer()))
+		if (auto* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player->GetLocalPlayer()))
 		{
-			if (Input.inputMapping != nullptr)
+			if (Input.inputMapping)
 			{
 				inputSystem->AddMappingContext(Input.inputMapping, 0);
+			}
+			else
+			{
+				return;
 			}
 		}
 	}

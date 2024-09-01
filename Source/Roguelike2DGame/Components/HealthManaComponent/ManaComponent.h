@@ -20,12 +20,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetMaxMana(int newMax);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	int GetMaxMana();
 
 	UFUNCTION(BlueprintCallable)
 	void SetMana(int newMana);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	int GetMana();
 
 protected:

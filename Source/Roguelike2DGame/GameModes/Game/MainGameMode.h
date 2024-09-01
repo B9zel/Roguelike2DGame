@@ -18,10 +18,14 @@ class ROGUELIKE2DGAME_API AMainGameMode : public AGameModeBase
 public:
 
 	void OnDeathActor(AActor* deadActor, AActor* Instigator);
-
 	void OnSpawnActor(AActor* spawnActor);
 
+protected:
+
+	virtual void EndPlay(EEndPlayReason::Type ReasonEndPlay) override;
+
 public:
+
 	FMainGameModeDelegateTwoParam deathDeligate;
 	FMainGameModeDelegateOneParam spawnDeligate;
 };

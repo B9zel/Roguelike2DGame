@@ -5,11 +5,11 @@
 #include "../../../Components/Stat/CharacterStatsComponent.h"
 
 
+#include <GameFramework/CharacterMovementComponent.h>
 #include <PaperZDAnimationComponent.h>
 #include <PaperZDAnimInstance.h>
-#include <Kismet/GameplayStatics.h>
 #include <Components/BoxComponent.h>
-#include <GameFramework/CharacterMovementComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 
 
@@ -20,7 +20,10 @@ AMeleeEnemy::AMeleeEnemy()
 	collisonBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
 	collisonBoxComponent->SetupAttachment(GetRootComponent());
 
-	timeStayInPatrolling = 1.f;
+	timeStayInPatrolling = 1.0f;
+	timeReloadAttack = 1.0f;
+	canAttack = true;
+	isAttacking = false;
 }
 
 float AMeleeEnemy::GetTimeStayPatrolling()
@@ -34,9 +37,6 @@ void AMeleeEnemy::OnAttack()
 	SetIsAttacking(true);
 	GetCharacterMovement()->SetActive(false);
 }
-
-
-
 
 void AMeleeEnemy::OnAttackHit()
 {
@@ -58,6 +58,13 @@ void AMeleeEnemy::OnEndAnimAttack()
 
 	GetCharacterMovement()->SetActive(true);
 	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, GetTimeReloadAttack(), false);
+}
+
+void AMeleeEnemy::OnReloadAttack()
+{
+	Super::OnReloadAttack();
+
+	SetCanAttack(true);
 }
 
 void AMeleeEnemy::SetTimeReloadAttack(float time)

@@ -23,12 +23,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const TArray<TSoftClassPtr<class UBaseArtifactComponent>>& GetOpenArtifacts() { return openArtifactsClass; }
 
-
-	const UResourceLoader* GetResourceLoader();
+	ResourceLoader* GetResourceLoader();
 
 protected:
 
 	virtual void Init() override;
+	virtual void Shutdown() override;
 	
 protected:
 
@@ -37,7 +37,6 @@ protected:
 
 private:
 
-
-	UPROPERTY()
-	class UResourceLoader* m_ResourceLoader;
+	//UPROPERTY()
+	class ResourceLoader* m_ResourceLoader;
 };

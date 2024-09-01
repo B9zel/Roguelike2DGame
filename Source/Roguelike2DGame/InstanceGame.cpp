@@ -21,12 +21,21 @@ void UInstanceGame::AddArtifactClass(TSoftClassPtr<class UBaseArtifactComponent>
 	openArtifactsClass.Add(artifact);
 }
 
-const UResourceLoader* UInstanceGame::GetResourceLoader()
+ResourceLoader* UInstanceGame::GetResourceLoader()
 {
 	return m_ResourceLoader;
 }
 
 void UInstanceGame::Init()
 {
-	m_ResourceLoader = UResourceLoader::Create(this);
+	m_ResourceLoader = (ResourceLoader::Create());
+	//m_ResourceLoader->ClearData();
+}
+
+void UInstanceGame::Shutdown()
+{
+	Super::Shutdown();
+
+	m_ResourceLoader->DestroyLoader();
+	m_ResourceLoader = nullptr;
 }

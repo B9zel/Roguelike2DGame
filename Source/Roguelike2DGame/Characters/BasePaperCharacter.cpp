@@ -11,7 +11,6 @@
 
 
 
-
 ABasePaperCharacter::ABasePaperCharacter()
 {
 	healthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
@@ -22,7 +21,6 @@ ABasePaperCharacter::ABasePaperCharacter()
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
 }
-
 
 void ABasePaperCharacter::BeginPlay()
 {

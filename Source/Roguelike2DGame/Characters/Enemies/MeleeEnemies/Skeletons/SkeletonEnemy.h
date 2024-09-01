@@ -8,21 +8,20 @@
 
 
 
+
 USTRUCT(BlueprintType)
 struct FSkeletonAnimation
 {
 	GENERATED_BODY()
 
+public:
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName death;
-
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName takeDamage;
-
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName attack;
-
 };
 
 UCLASS()
@@ -36,15 +35,9 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
-
 	virtual void Tick(float deltaTime) override;
-
 	virtual void OnAttack() override;
-
-	virtual void OnReloadAttack() override;
-
 	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
-
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
 	void Destroyer();
@@ -56,5 +49,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FSkeletonAnimation anim;
-
 };

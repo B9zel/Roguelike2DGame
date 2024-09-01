@@ -99,24 +99,24 @@ public:
 	void InputDisable();
 
 	UFUNCTION(BlueprintCallable)
-	void ImproveStat(const ETypeScroll& typeStat, float mulripier);
+	void ImproveStat(const ETypeScroll& typeStat, float multiplier);
 
 	template<class UserClass>
 	void BindInputDash(UserClass* object, FSimpleDelegate::TMethodPtr< UserClass > Func);
 	
 	//Getters
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-		UBaseWeapon* GetActiveWeapon() const { return activeWeapon; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-		TMap<EWeaponType, UBaseWeapon*>& GetWeapons()  { return weaponsObj; }
+	UFUNCTION(BlueprintPure)
+	UBaseWeapon* GetActiveWeapon() const { return activeWeapon; }
+	UFUNCTION(BlueprintPure)
+	TMap<EWeaponType, UBaseWeapon*>& GetWeapons()  { return weaponsObj; }
+	UFUNCTION(BlueprintPure)
+	UManaComponent* GetManaComponent() { return manaComponent; }
+	UFUNCTION()
+	float GetDefoultGravity() { return m_defoultGravity; }
+
 
 	UFUNCTION(BlueprintCallable)
 	void AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<UBaseWeapon> newWeapon);
-
-	UFUNCTION()
-		UManaComponent* GetManaComponent() { return manaComponent; }
-	UFUNCTION()
-		float GetDefoultGravity() { return m_defoultGravity; }
 
 protected:
 

@@ -5,8 +5,8 @@
 #include "../../../../Components/HealthManaComponent/HealthComponent.h"
 #include "../../../../Components/Stat/CharacterStatsComponent.h"
 
-#include <PaperZDAnimInstance.h>
 
+#include <PaperZDAnimInstance.h>
 
 
 
@@ -45,11 +45,6 @@ void ASkeletonEnemy::OnAttack()
 	}
 }
 
-void ASkeletonEnemy::OnReloadAttack()
-{
-	Super::OnReloadAttack();
-
-}
 
 void ASkeletonEnemy::OnDeath(AActor* deadActor, AActor* InstigatorActor)
 {

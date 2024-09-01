@@ -4,12 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "../../Data/ResourceLoader.h"
 #include "GamePlayerController.generated.h"
+
+
+
+
+DECLARE_LOG_CATEGORY_CLASS(GameController, Display, Display)
+
 
 
 class AHUDGame;
 class UArtifactUsedDataAsset;
-class SWidget;
+class UInputMappingContext;
+class UInputAction;
+
+
+USTRUCT(BlueprintType)
+struct FControllerInputAction
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	UInputAction* inventoryCallAction;
+
+	UPROPERTY(EditAnywhere)
+	UInputMappingContext* controllerInputContext;
+};
 
 
 
@@ -26,22 +49,26 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetMoney() const { return money; }
+	UFUNCTION(BlueprintPure)
+	UArtifactUsedDataAsset* GetArtifactDataAsset();
+	UFUNCTION(BlueprintPure)
+	int32 GetEnergyOfSouls();
 
 	UFUNCTION(BlueprintCallable)
 	void SetMoney(const int32 newMoney);
 	UFUNCTION(BlueprintCallable)
+	void SetEnergyOfSouls(int32 number);
+	UFUNCTION(BlueprintCallable)
 	void AddMoney(const int32 addMoney);
+	UFUNCTION(BlueprintCallable)
+	void AddEnergyOfSouls(int32 addValue);
 
 
 	UFUNCTION(BlueprintCallable)
 	UBaseArtifactComponent* BindArtifact(const ESlotArtifact slot,const TSoftClassPtr<UBaseArtifactComponent>& artifactBind);
 
 	UFUNCTION(BlueprintCallable)
-	void SetIconArtifact(const ESlotArtifact slot, UTexture2D* texture);
-
-	UFUNCTION(BlueprintCallable)
 	void SetInputUIMode(UUserWidget* focusWidget);
-
 	UFUNCTION(BlueprintCallable)
 	void SetInputGameMode();
 
@@ -50,20 +77,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableCharacterMovement();
 
-	UArtifactUsedDataAsset* GetArtifactDataAsset() { return activeArtifacts; }
 
 protected:
 
 	virtual void OnPossess(APawn* newPawn) override;
+	virtual void SetupInputComponent() override;
+
+	void OnShowInventory();
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin="0"))
+	int32 money;
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
+	int32 energyOfSouls;
 
 	UPROPERTY()
 	AHUDGame* HUD;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
-	int32 money;
-
 	UPROPERTY(EditAnywhere)
-	UArtifactUsedDataAsset* activeArtifacts;
+	FControllerInputAction Input;
+
+private:
+
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	TSoftObjectPtr<UArtifactUsedDataAsset> activeArtifacts;
+
+	LoaderHandle loaderArtifactAsset;
 };

@@ -6,9 +6,9 @@
 #include "../BasePaperCharacter.h"
 #include "EnemyCharacter.generated.h"
 
-/**
- * 
- */
+
+
+
 UCLASS(Abstract)
 class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 {
@@ -16,12 +16,13 @@ class ROGUELIKE2DGAME_API AEnemyCharacter : public ABasePaperCharacter
 public:
 
 	AEnemyCharacter();
-	
+
+public:
+
 	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchDirectionX();
-
 
 
 	UFUNCTION(BlueprintCallable)
@@ -52,14 +53,14 @@ protected:
 	// Attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	int damage;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
 	float distanceAttack;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
+	float capsuleRadiusAttack;
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
+	float capsuleHalfHeightAttack;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TEnumAsByte<EObjectTypeQuery>> typesAttackCollision;
-
-	UPROPERTY(EditAnywhere)
-	float capsuleRadiusAttack;
-	UPROPERTY(EditAnywhere)
-	float capsuleHalfHeightAttack;
 };

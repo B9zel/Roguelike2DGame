@@ -16,7 +16,6 @@ public:
 	
 	UCharacterStatsComponent();
 
-public:
 
 
 };

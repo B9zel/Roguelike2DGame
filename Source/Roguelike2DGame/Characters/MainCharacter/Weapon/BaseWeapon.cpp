@@ -33,13 +33,12 @@ void UBaseWeapon::PostInitProperties()
 }
 
 
-
 bool UBaseWeapon::DamageLevelUp()
 {
 	if (GetLevelDamage() < GetMaxLevel())
 	{
+		SetSouls(GetSouls() - GetSoulsMaxForDamage());
 		SetLevelDamage(GetLevelDamage() + 1);
-		SetSouls(0);
 
 		return true;
 	}
@@ -50,8 +49,8 @@ bool UBaseWeapon::SpeedAttackLevelUp()
 {
 	if (GetLevelSpeedAttack() < GetMaxLevel())
 	{
+		SetSouls(GetSouls() - GetSoulsMaxForAttackSpeed());
 		SetLeveSpeedAttack(GetLevelSpeedAttack() + 1);
-		SetSouls(0);
 
 		return true;
 	}
