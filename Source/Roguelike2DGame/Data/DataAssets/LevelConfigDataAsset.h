@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "../Structures/PairCost.h"
 #include "LevelConfigDataAsset.generated.h"
 
-/**
- * 
- */
+
+
+
+
 UCLASS()
 class ROGUELIKE2DGAME_API ULevelConfigDataAsset : public UPrimaryDataAsset
 {
@@ -17,10 +19,9 @@ class ROGUELIKE2DGAME_API ULevelConfigDataAsset : public UPrimaryDataAsset
 public:
 	/*
 	*	Key int is level
-	*	Value int is amount of souls for level up
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<int, int> levelSouls;
+	TMap<int, FPairCost> levelSouls;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
 	int maxLevel;

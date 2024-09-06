@@ -38,33 +38,39 @@ public:
 	
 	// Getters
 	UFUNCTION(BlueprintPure)
-	virtual float GetTimeReload() {	return 0;}
+	virtual float GetTimeReload()					{ return 0; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetCanAttack() const					{ return canAttack; }
+	UFUNCTION(BlueprintPure)
+	bool GetCanAttack() const						{ return canAttack; }
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsAttacking() const					{ return isAttacking; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsReady() const						{ return isReady; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int GetSouls() const						{ return soulsCurrent; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int GetLevelDamage() const					{ return currentLevelDamage; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int GetLevelSpeedAttack() const				{ return currentLevelSpeedAttack; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	ABasePaperCharacter* GetOwner() const		{ return owner; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	const EWeaponType& GetWeaponType() const	{ return weaponType; }
-	UFUNCTION(BlueprintCallable)
-	int GetDamage() const						{ return damage; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintPure)
+	bool IsAttacking() const						{ return isAttacking; }
+	UFUNCTION(BlueprintPure)
+	bool IsReady() const							{ return isReady; }
+	UFUNCTION(BlueprintPure)
+	int GetSouls() const							{ return soulsCurrent; }
+	UFUNCTION(BlueprintPure)
+	int GetLevelDamage() const						{ return currentLevelDamage; }
+	UFUNCTION(BlueprintPure)
+	int GetLevelSpeedAttack() const					{ return currentLevelSpeedAttack; }
+	UFUNCTION(BlueprintPure)
+	ABasePaperCharacter* GetOwner() const			{ return owner; }
+	UFUNCTION(BlueprintPure)
+	const EWeaponType& GetWeaponType() const		{ return weaponType; }
+	UFUNCTION(BlueprintPure)
+	int GetDamage() const							{ return damage; }
+	UFUNCTION(BlueprintPure)
+	ULevelConfigDataAsset* GetConfigLevelOfWeapon() { return configLevel; }
+	UFUNCTION(BlueprintPure)
 	int GetMaxLevel() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintPure)
 	int GetSoulsMaxForDamage() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintPure)
 	int GetSoulsMaxForAttackSpeed() const;
+	UFUNCTION(BlueprintPure)
+	int GetGoldsMaxForDamage() const;
+	UFUNCTION(BlueprintPure)
+	int GetGoldsMaxForAttackSpeed() const;
 
 
 	// Setters

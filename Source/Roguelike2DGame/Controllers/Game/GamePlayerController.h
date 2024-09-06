@@ -48,18 +48,19 @@ public:
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetMoney() const { return money; }
+	int32 GetGolds() const { return Golds; }
 	UFUNCTION(BlueprintPure)
 	UArtifactUsedDataAsset* GetArtifactDataAsset();
 	UFUNCTION(BlueprintPure)
 	int32 GetEnergyOfSouls();
 
 	UFUNCTION(BlueprintCallable)
-	void SetMoney(const int32 newMoney);
+	void SetGolds(const int32 newGolds);
 	UFUNCTION(BlueprintCallable)
 	void SetEnergyOfSouls(int32 number);
 	UFUNCTION(BlueprintCallable)
-	void AddMoney(const int32 addMoney);
+	void AddGolds(const int32 addGolds);
+	
 	UFUNCTION(BlueprintCallable)
 	void AddEnergyOfSouls(int32 addValue);
 
@@ -87,7 +88,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin="0"))
-	int32 money;
+	int32 Golds;
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
 	int32 energyOfSouls;
 

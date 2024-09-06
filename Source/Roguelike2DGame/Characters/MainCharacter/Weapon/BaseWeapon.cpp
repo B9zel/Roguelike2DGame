@@ -100,12 +100,22 @@ int UBaseWeapon::GetMaxLevel() const
 
 int UBaseWeapon::GetSoulsMaxForDamage() const
 {
-	return configLevel->levelSouls[GetLevelDamage()];
+	return configLevel->levelSouls[GetLevelDamage()].souls;
 }
 
 int UBaseWeapon::GetSoulsMaxForAttackSpeed() const
 {
-	return configLevel->levelSouls[GetLevelSpeedAttack()];
+	return configLevel->levelSouls[GetLevelSpeedAttack()].souls;
+}
+
+int UBaseWeapon::GetGoldsMaxForDamage() const
+{
+	return configLevel->levelSouls[GetLevelDamage()].gold;
+}
+
+int UBaseWeapon::GetGoldsMaxForAttackSpeed() const
+{
+	return configLevel->levelSouls[GetLevelSpeedAttack()].gold;
 }
 
 void UBaseWeapon::SetDamage(const int newDamage)

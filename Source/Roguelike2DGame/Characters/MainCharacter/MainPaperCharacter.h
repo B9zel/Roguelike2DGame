@@ -93,8 +93,6 @@ public:
 	
 public:
 
-	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
-
 	void InputEnable();
 	void InputDisable();
 
@@ -117,6 +115,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<UBaseWeapon> newWeapon);
+
+public:
+
+	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
 
 protected:
 

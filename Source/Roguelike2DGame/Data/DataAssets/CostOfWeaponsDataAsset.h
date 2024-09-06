@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "../Structures/PairCost.h"
 #include "CostOfWeaponsDataAsset.generated.h"
+
 
 
 enum class EWeaponType : uint8;
@@ -18,5 +20,5 @@ class ROGUELIKE2DGAME_API UCostOfWeaponsDataAsset : public UPrimaryDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<EWeaponType, int32> costWeapons;
+	TMap<EWeaponType, FPairCost> costWeapons;
 };

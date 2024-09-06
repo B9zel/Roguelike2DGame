@@ -21,7 +21,7 @@
 AGamePlayerController::AGamePlayerController()
 {
 	HUD				= nullptr;
-	money			= 0;
+	Golds			= 0;
 	energyOfSouls	= 0;
 }
 
@@ -120,24 +120,24 @@ void AGamePlayerController::SetEnergyOfSouls(int32 number)
 	energyOfSouls = number;
 }
 
-void AGamePlayerController::SetMoney(int32 newMoney)
+void AGamePlayerController::SetGolds(int32 newMoney)
 {
 	if (newMoney < 0)
 	{
 		UE_LOG(GameController, Warning, TEXT("Can't set negative value in money"));
 		return;
 	}
-	money = newMoney;
+	Golds = newMoney;
 }
 
-void AGamePlayerController::AddMoney(int32 addMoney)
+void AGamePlayerController::AddGolds(int32 addGolds)
 {
-	if (addMoney < 0)
+	if (addGolds < 0)
 	{
 		UE_LOG(GameController, Warning, TEXT("Can't add negative value in money"));
 		return;
 	}
-	money += addMoney;
+	Golds += addGolds;
 }
 
 void AGamePlayerController::AddEnergyOfSouls(int32 addValue)
