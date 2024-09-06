@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Data/ResourceLoader.h"
 #include "InstanceGame.generated.h"
 
 /**
@@ -19,21 +20,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddArtifactClass(TSoftClassPtr<class UBaseArtifactComponent> artifact);
 
-	//UFUNCTION(BlueprintCallable)
-	//void AddSkillClass(TSoftClassPtr<class UBaseSkillComponent>& skill);
-
-
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	const TArray<TSoftClassPtr<class UBaseArtifactComponent>>& GetOpenArtifacts() { return openArtifactsClass; }
 
-	//UFUNCTION(BlueprintCallable, BLueprintPure)
-	//const TArray<TSubclassOf<class UBaseSkillComponent>>& GetOpenSkills() { return m_openSkillsClass; }
+	ResourceLoader* GetResourceLoader();
 
+protected:
+
+	virtual void Init() override;
+	virtual void Shutdown() override;
+	
 protected:
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSoftClassPtr<class UBaseArtifactComponent>> openArtifactsClass;
-	//UPROPERTY(EditAnywhere)
-	//TArray<TSoftClassPtr<class UBaseSkillComponent>> m_openSkillsClass;
-	
+
+private:
+
+	//UPROPERTY()
+	class ResourceLoader* m_ResourceLoader;
 };

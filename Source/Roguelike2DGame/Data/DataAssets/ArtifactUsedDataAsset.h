@@ -7,6 +7,7 @@
 #include "ArtifactUsedDataAsset.generated.h"
 
 
+DECLARE_LOG_CATEGORY_CLASS(LOG_ArtifactDataAasset, Display, Display);
 
 class UBaseArtifactComponent;
 
@@ -30,6 +31,14 @@ class ROGUELIKE2DGAME_API UArtifactUsedDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 	
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void SetIcon(const ESlotArtifact slot, UTexture2D* Texture);
+
+	UFUNCTION(BlueprintPure)
+	bool FindArtifact(const FString pahtToArtifact, ESlotArtifact& slot);
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

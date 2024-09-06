@@ -14,7 +14,7 @@ class  UMeleeWeapon : public UInterface
 };
 
 
-class IMeleeWeapon
+class ROGUELIKE2DGAME_API IMeleeWeapon
 {
 	GENERATED_BODY()
 

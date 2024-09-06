@@ -78,7 +78,7 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 //	OnAttckCharacter();
 //}
 
-void ABaseMeleeAIController::OnDeathControlledCharacter(AActor* actor)
+void ABaseMeleeAIController::OnDeathControlledCharacter(AActor* actor, AActor* InstigatorActor)
 {
 	if (actor == GetPawn())
 	{

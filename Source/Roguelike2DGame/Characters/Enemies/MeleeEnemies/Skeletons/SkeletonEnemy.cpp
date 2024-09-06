@@ -5,8 +5,8 @@
 #include "../../../../Components/HealthManaComponent/HealthComponent.h"
 #include "../../../../Components/Stat/CharacterStatsComponent.h"
 
-#include <PaperZDAnimInstance.h>
 
+#include <PaperZDAnimInstance.h>
 
 
 
@@ -19,7 +19,6 @@ void ASkeletonEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 }
 
 void ASkeletonEnemy::Tick(float deltaTime)
@@ -38,7 +37,7 @@ void ASkeletonEnemy::Tick(float deltaTime)
 
 void ASkeletonEnemy::OnAttack()
 {
-	if (statsComponent->GetCanAttack())
+	if (GetCanAttack())
 	{
 		AMeleeEnemy::OnAttack();
 
@@ -46,15 +45,10 @@ void ASkeletonEnemy::OnAttack()
 	}
 }
 
-void ASkeletonEnemy::OnReloadAttack()
-{
-	Super::OnReloadAttack();
 
-}
-
-void ASkeletonEnemy::OnDeath(AActor* deadActor)
+void ASkeletonEnemy::OnDeath(AActor* deadActor, AActor* InstigatorActor)
 {
-	Super::OnDeath(deadActor);
+	Super::OnDeath(deadActor, InstigatorActor);
 	if (deadActor == this)
 	{
 		GetAnimInstance()->JumpToNode(anim.death);
@@ -66,20 +60,18 @@ void ASkeletonEnemy::OnDeath(AActor* deadActor)
 	}
 }
 
-void ASkeletonEnemy::OnTakePlayerDamage(AActor* instigatorDamage)
+float ASkeletonEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::OnTakePlayerDamage(instigatorDamage);
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Damage"));
-	if (!statsComponent->IsAttacking() && !healthComponent->GetIsDead())
+	if (!IsAttacking() && !healthComponent->GetIsDead())
 	{
 		GetAnimInstance()->JumpToNode(anim.takeDamage);
 	}
+	return DamageAmount;
 }
 
 void ASkeletonEnemy::Destroyer()
 {
 	Destroy();
 }
-
-

@@ -12,7 +12,7 @@ class UDistanceWeapon : public UInterface
 	GENERATED_BODY()
 };
 
-class IDistanceWeapon
+class ROGUELIKE2DGAME_API IDistanceWeapon
 {
 	GENERATED_BODY()
 

@@ -7,7 +7,6 @@
 UENUM(BlueprintType)
 enum class ETypeScroll : uint8
 {
-	AGILITY = 0,
-	HEALTH,
+	HEALTH = 0,
 	MANA
 };

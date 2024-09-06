@@ -7,8 +7,12 @@
 #include "BaseWeapon.generated.h"
 
 
+#define CHECK_WITH_LOG_WARNING(CheckIs, Text) {  \
+			if (CheckIs) {UE_LOG(LogTemp, Warning, TEXT(Text)); return; \
+			}}
 
 class ABasePaperCharacter;
+class ULevelConfigDataAsset;
 enum class EWeaponType : uint8;
 
 
@@ -25,26 +29,75 @@ public:
 
 	virtual void PostInitProperties() override;
 
-	const EWeaponType& GetWeaponType() { return weaponType; }
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool DamageLevelUp();
+	UFUNCTION(BlueprintCallable)
+	virtual bool SpeedAttackLevelUp();
 
+	
+	// Getters
+	UFUNCTION(BlueprintPure)
+	virtual float GetTimeReload()					{ return 0; }
+
+	UFUNCTION(BlueprintPure)
+	bool GetCanAttack() const						{ return canAttack; }
+	
+	UFUNCTION(BlueprintPure)
+	bool IsAttacking() const						{ return isAttacking; }
+	UFUNCTION(BlueprintPure)
+	bool IsReady() const							{ return isReady; }
+	UFUNCTION(BlueprintPure)
+	int GetSouls() const							{ return soulsCurrent; }
+	UFUNCTION(BlueprintPure)
+	int GetLevelDamage() const						{ return currentLevelDamage; }
+	UFUNCTION(BlueprintPure)
+	int GetLevelSpeedAttack() const					{ return currentLevelSpeedAttack; }
+	UFUNCTION(BlueprintPure)
+	ABasePaperCharacter* GetOwner() const			{ return owner; }
+	UFUNCTION(BlueprintPure)
+	const EWeaponType& GetWeaponType() const		{ return weaponType; }
+	UFUNCTION(BlueprintPure)
+	int GetDamage() const							{ return damage; }
+	UFUNCTION(BlueprintPure)
+	ULevelConfigDataAsset* GetConfigLevelOfWeapon() { return configLevel; }
+	UFUNCTION(BlueprintPure)
+	int GetMaxLevel() const;
+	UFUNCTION(BlueprintPure)
+	int GetSoulsMaxForDamage() const;
+	UFUNCTION(BlueprintPure)
+	int GetSoulsMaxForAttackSpeed() const;
+	UFUNCTION(BlueprintPure)
+	int GetGoldsMaxForDamage() const;
+	UFUNCTION(BlueprintPure)
+	int GetGoldsMaxForAttackSpeed() const;
+
+
+	// Setters
+	UFUNCTION()
 	void SetOwner(ABasePaperCharacter* character) { owner = character; }
-	ABasePaperCharacter* GetOwner() { return owner; }
-
-	virtual void StartReload();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool GetCanAttack() { return canAttack; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetTimeReload() { return timeReload; }
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsAttacking() { return isAttacking; }
+	UFUNCTION(BlueprintCallable)
+	void SetCanAttack(const bool can)			  { canAttack = can; }
+	UFUNCTION(BlueprintCallable)
+	void SetIsAttacking(const bool is)			  { isAttacking = is; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetCanAttack(bool can) { canAttack = can; }
+	void SetIsReady(const bool is)				  { isReady = is; }
 	UFUNCTION(BlueprintCallable)
-	void SetIsAttacking(bool is) { isAttacking = is; }
+	void SetSouls(const int souls);
 	UFUNCTION(BlueprintCallable)
-	void SetTimeReload(float time);
+	void SetLevelDamage(const int level);
+	UFUNCTION(BlueprintCallable)
+	void SetLeveSpeedAttack(const int level);
+	UFUNCTION()
+	void SetDamage(const int newDamage);
+
+	//UFUNCTION(BlueprintCallable)
+	virtual void SetTimeReload(const float time) PURE_VIRTUAL(UBaseWeapon::SetTimeReload, );
+
+
+	UFUNCTION(BlueprintCallable)
+	void AddSouls(const int count);
 
 protected:
 
@@ -56,18 +109,36 @@ protected:
 	EWeaponType weaponType;
 	UPROPERTY()
 	ABasePaperCharacter* owner;
-
+	
+	UPROPERTY(EditAnywhere)
+	TArray<TEnumAsByte<EObjectTypeQuery>> typesAttackCollision; // types of collision, that can be attacked
+	UPROPERTY()
 	FTimerHandle reloadHandle;
 
-	// characteristics
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
-	int damage;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
-	float timeReload;
-
+	//Attack
 	UPROPERTY(EditAnywhere)
 	bool canAttack;
-
-	//UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
+	int damage;
 	bool isAttacking;
+	bool isReady;
+
+
+	// Soul
+	UPROPERTY(EditAnywhere, meta=(ClampMin="0", UIMin="0"))
+	int soulsCurrent;
+
+	// Level
+	UPROPERTY(EditAnywhere, meta=(ClampMin="1", UIMin="1"))
+	int currentLevelDamage;
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "1", UIMin = "1"))
+	int currentLevelSpeedAttack;
+
+	UPROPERTY(EditAnywhere)
+	ULevelConfigDataAsset* configLevel;
+
+	// Value, that change damage
+	UPROPERTY(EditAnywhere)
+	float levelUpDamage;
+
 };

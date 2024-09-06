@@ -8,7 +8,7 @@ public class Roguelike2DGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", "UMG", "GameplayTasks", "AIModule" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", "UMG", "GameplayTasks", "AIModule", "SlateCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "EnhancedInput" });
 

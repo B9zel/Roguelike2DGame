@@ -20,9 +20,9 @@ ASkeletonKing::ASkeletonKing()
 	
 }
 
-void ASkeletonKing::OnDeath(AActor* actor)
+void ASkeletonKing::OnDeath(AActor* actor, AActor* InstigatorActor)
 {
-	Super::OnDeath(actor);
+	Super::OnDeath(actor, InstigatorActor);
 
 	if (actor == this)
 	{
@@ -48,7 +48,7 @@ ASkeletonEnemy* ASkeletonKing::SpawnSkeletMinion()
 	return character;
 }
 
-void ASkeletonKing::OnDeathSkeletonMinion(AActor* deadActor)
+void ASkeletonKing::OnDeathSkeletonMinion(AActor* deadActor, AActor* InstigatorActor)
 {
 	if (deadActor->StaticClass() == ASkeletonEnemy::StaticClass())
 	{

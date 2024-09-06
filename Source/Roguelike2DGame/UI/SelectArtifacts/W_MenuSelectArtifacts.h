@@ -13,5 +13,6 @@ UCLASS()
 class ROGUELIKE2DGAME_API UW_MenuSelectArtifacts : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+
 };

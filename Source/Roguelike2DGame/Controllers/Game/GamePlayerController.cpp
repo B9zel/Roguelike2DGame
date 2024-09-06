@@ -2,14 +2,17 @@
 
 
 #include "GamePlayerController.h"
-#include "../../HUD/Game/HUDGame.h"
 #include "../../Components/Artifacts/BaseArtifactComponent.h"
-#include "../../InstanceGame.h"
 #include "../../Characters/MainCharacter/MainPaperCharacter.h"
-#include "../../Data/Enums/ESlotArtifact.h"
 #include "../../Data/DataAssets/ArtifactUsedDataAsset.h"
+#include "../../Data/Enums/ESlotArtifact.h"
+#include "../../UI/Inventory/W_InventoryMenu.h"
+#include "../../HUD/Game/HUDGame.h"
+#include "../../InstanceGame.h"
 
-#include <Kismet/GameplayStatics.h>
+#include <Blueprint/UserWidget.h>
+#include <GameFramework/CharacterMovementComponent.h>
+#include <EnhancedInputSubsystems.h>
 
 
 
@@ -17,14 +20,9 @@
 
 AGamePlayerController::AGamePlayerController()
 {
-	HUD = nullptr;
-}
-
-void AGamePlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	
+	HUD				= nullptr;
+	Golds			= 0;
+	energyOfSouls	= 0;
 }
 
 void AGamePlayerController::OnPossess(APawn* newPawn)
@@ -32,42 +30,39 @@ void AGamePlayerController::OnPossess(APawn* newPawn)
 	Super::OnPossess(newPawn);
 
 	HUD = GetHUD<AHUDGame>();
-	if (HUD != nullptr)
+	if (HUD)
 	{
 		HUD->ShowGameMainMenu(true);
 	}
 }
 
-int32 AGamePlayerController::GetMoney()
+void AGamePlayerController::SetupInputComponent()
 {
-	return money;
-}
+	Super::SetupInputComponent();
 
-void AGamePlayerController::SetMoney(int32 newMoney)
-{
-	if (newMoney < 0)
+	if (auto* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't set negative value in money"));
-		return;
+		if (Input.controllerInputContext)
+		{
+			inputSystem->AddMappingContext(Input.controllerInputContext, 0);
+		}
 	}
-	money = newMoney;
+	UEnhancedInputComponent* enhancedInput = Cast<UEnhancedInputComponent>(InputComponent.Get());
+	enhancedInput->BindAction(Input.inventoryCallAction, ETriggerEvent::Started, this, &AGamePlayerController::OnShowInventory);
 }
 
-void AGamePlayerController::AddMoney(int32 addMoney)
+void AGamePlayerController::OnShowInventory()
 {
-	if (addMoney < 0)
+	if (HUD)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't add negative value in money"));
-		return;
+		SetInputUIMode(HUD->ShowInventory(true));
 	}
-	money += addMoney;
 }
 
-UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact slot, const TSoftClassPtr<UBaseArtifactComponent> artifactBind)
+UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact slot, const TSoftClassPtr<UBaseArtifactComponent>& artifactBind)
 {
 	const bool isLeftArtifact = slot == ESlotArtifact::LEFT_SLOT;
 	UBaseArtifactComponent** artifact = isLeftArtifact ? &activeArtifacts->leftArtifact.artifact : &activeArtifacts->rightArtifact.artifact;
-	
 
 	if ((*artifact))
 	{
@@ -82,18 +77,90 @@ UBaseArtifactComponent* AGamePlayerController::BindArtifact(const ESlotArtifact 
 	{
 		*artifact = nullptr;
 	}
-
 	return *artifact;
 }
 
-void AGamePlayerController::SetIconArtifact(const ESlotArtifact slot, UTexture2D* texture)
+
+UArtifactUsedDataAsset* AGamePlayerController::GetArtifactDataAsset()
 {
-	if (slot == ESlotArtifact::LEFT_SLOT)
+	if (!loaderArtifactAsset.IsValid())
 	{
-		activeArtifacts->leftArtifact.icon = texture;
+		ResourceLoader::ResourceSyncLoad(loaderArtifactAsset, activeArtifacts.ToSoftObjectPath());
 	}
-	else
+
+	return Cast<UArtifactUsedDataAsset>(ResourceLoader::GetData(loaderArtifactAsset));
+}
+
+void AGamePlayerController::SetInputUIMode(UUserWidget* focusWidget)
+{
+	if (!focusWidget) return;
+
+	SetShowMouseCursor(true);
+
+	FInputModeUIOnly inputMode;
+	inputMode.SetWidgetToFocus(focusWidget->TakeWidget());
+	SetInputMode(inputMode);
+}
+
+void AGamePlayerController::SetInputGameMode()
+{
+	SetShowMouseCursor(false);
+
+	FInputModeGameOnly inputMode;
+	SetInputMode(inputMode);
+}
+
+void AGamePlayerController::SetEnergyOfSouls(int32 number)
+{
+	if (number < 0)
 	{
-		activeArtifacts->rightArtifact.icon = texture;
+		UE_LOG(GameController, Warning, TEXT("Can't set negative number"));
+		return;
 	}
+	energyOfSouls = number;
+}
+
+void AGamePlayerController::SetGolds(int32 newMoney)
+{
+	if (newMoney < 0)
+	{
+		UE_LOG(GameController, Warning, TEXT("Can't set negative value in money"));
+		return;
+	}
+	Golds = newMoney;
+}
+
+void AGamePlayerController::AddGolds(int32 addGolds)
+{
+	if (addGolds < 0)
+	{
+		UE_LOG(GameController, Warning, TEXT("Can't add negative value in money"));
+		return;
+	}
+	Golds += addGolds;
+}
+
+void AGamePlayerController::AddEnergyOfSouls(int32 addValue)
+{
+	if (addValue < 0)
+	{
+		UE_LOG(GameController, Warning, TEXT("Can't add negative value in energy of souls"));
+		return;
+	}
+	energyOfSouls += addValue;
+}
+
+void AGamePlayerController::EnableCharacterMovement()
+{
+	GetCharacter()->GetCharacterMovement()->Activate();
+}
+
+void AGamePlayerController::DisableCharacterMovement()
+{
+	GetCharacter()->GetCharacterMovement()->Deactivate();
+}
+
+int32 AGamePlayerController::GetEnergyOfSouls()
+{
+	return energyOfSouls;
 }

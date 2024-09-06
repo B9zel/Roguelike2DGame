@@ -22,11 +22,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	ASkeletonEnemy* SpawnSkeletMinion();
 
-	virtual void OnDeath(AActor* deadActor) override;
+	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
 
 private:
 	UFUNCTION()
-	void OnDeathSkeletonMinion(AActor* deadActor);
+	void OnDeathSkeletonMinion(AActor* deadActor, AActor* instigatorActor);
 
 protected:
 

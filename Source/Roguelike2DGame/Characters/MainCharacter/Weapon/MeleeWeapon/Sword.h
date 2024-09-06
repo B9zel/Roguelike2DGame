@@ -19,16 +19,19 @@ public:
 
 	USword();
 
+public:
+
 	virtual void Attack_Implementation() override;
 
 	UFUNCTION(BlueprintCallable)
 	float GetDistanceAttack() { return distanceAttack; }
+	
 
-	UFUNCTION(BlueprintCallable)
-	int GetDamage() { return damage; }
-
-	void SetDamage(int newDamage);
+	
 	void SetDistanceAttack(float distance);
+
+	virtual bool DamageLevelUp() override;
+	virtual bool SpeedAttackLevelUp() override;
 
 protected:
 
@@ -39,5 +42,5 @@ protected:
 	float capsuleRadiusAttack;
 	UPROPERTY(EditAnywhere)
 	float capsuleHalfHeightAttack;
-
+	
 };
