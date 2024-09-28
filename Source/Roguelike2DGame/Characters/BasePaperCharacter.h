@@ -12,26 +12,35 @@ class UHealthComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBaseCharacterDelegateWithoutParam);
 
 
-
+/*
+	Base class for all characters
+*/
 UCLASS(Abstract)
 class ROGUELIKE2DGAME_API ABasePaperCharacter : public APaperZDCharacter
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	ABasePaperCharacter();
 
-public:	
+public:
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnAttack() PURE_VIRTUAL(ABasePaperCharacter::OnAttack,);
+	virtual void OnAttack() PURE_VIRTUAL(ABasePaperCharacter::OnAttack, );
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAnimation(FName nameAnim);
 
 	//Getters
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UHealthComponent* GetHealthComponent() { return healthComponent; }
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UCharacterStatsComponent* GetStatsComponent() { return statsComponent; }
+
+
+	void EnableCharacterMovement();
+	void DisableCharacterMovement();
 
 protected:
 
@@ -41,8 +50,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnAttackHit() PURE_VIRTUAL(ABasePaperCharacter::OnAttackHit, );
 
-	UFUNCTION()
-	virtual void OnDeath(AActor* deadActor, AActor* instigatorActor) {}
+	UFUNCTION(BlueprintNativeEvent)
+	void OnDeath(AActor* deadActor, AActor* instigatorActor);
+
+	virtual void OnDeath_Implementation(AActor* deadActor, AActor* instigatorActor) {}
+
 	UFUNCTION()
 	virtual void OnSpawn(AActor* deadActor) {}
 	UFUNCTION(BlueprintCallable)
@@ -65,4 +77,8 @@ protected:
 	UHealthComponent* healthComponent;
 
 	FTimerHandle attackReloadTimer;
+
+private:
+
+	TEnumAsByte<EMovementMode> m_bufferMovementMode;
 };

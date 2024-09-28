@@ -7,6 +7,10 @@
 #include "ManaComponent.generated.h"
 
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateWithoutParam);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROGUELIKE2DGAME_API UManaComponent : public UActorComponent
 {
@@ -30,8 +34,19 @@ public:
 
 protected:
 
+	virtual void BeginPlay() override;
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FDelegateWithoutParam changeManaDelegate;
+
+protected:
+
 	UPROPERTY(EditAnywhere)
 	int maxMana;
 	UPROPERTY(EditAnywhere)
 	int currentMana;
+
+
 };

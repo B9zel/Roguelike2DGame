@@ -8,5 +8,6 @@ UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	SWORD = 0,
-	BOW
+	BOW,
+	SCYTHE
 };

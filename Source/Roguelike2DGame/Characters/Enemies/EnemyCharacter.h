@@ -19,7 +19,7 @@ public:
 
 public:
 
-	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
+	virtual void OnDeath_Implementation(AActor* deadActor, AActor* Instigator) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchDirectionX();
@@ -37,7 +37,16 @@ public:
 	void SetDamage(int newDamage);
 	void SetDistanceAttack(float distance);
 
+	void Destroyer();
+
 protected:
+
+	virtual void Tick(float deltaTime) override;
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	float timeDestroyAfterDeath;
 
 	// Moneys
 	UPROPERTY(EditAnywhere, meta=(ClampMin="0", UIMin = "0"))

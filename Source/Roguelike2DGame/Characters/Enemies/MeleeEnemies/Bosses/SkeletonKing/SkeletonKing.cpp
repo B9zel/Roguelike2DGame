@@ -20,7 +20,7 @@ ASkeletonKing::ASkeletonKing()
 	
 }
 
-void ASkeletonKing::OnDeath(AActor* actor, AActor* InstigatorActor)
+void ASkeletonKing::OnDeath_Implementation(AActor* actor, AActor* InstigatorActor)
 {
 	Super::OnDeath(actor, InstigatorActor);
 

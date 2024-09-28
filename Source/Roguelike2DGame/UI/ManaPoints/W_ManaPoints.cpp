@@ -27,10 +27,19 @@ void UW_ManaPoints::PostInit(AActor* actorSpawn)
 		if (actorSpawn == GetOwningPlayerPawn())
 		{
 			manaComponentOfCharacter = Cast<AMainPaperCharacter>(actorSpawn)->GetManaComponent();
-			
-			TB_CurrentMana->SetText(FText::FromString(FString::FromInt(manaComponentOfCharacter->GetMana())));
-			PB_ManaPoints->SetPercent(static_cast<float>(manaComponentOfCharacter->GetMana()) / manaComponentOfCharacter->GetMaxMana());
-			TB_MaxMana->SetText(FText::FromString(FString::FromInt(manaComponentOfCharacter->GetMaxMana())));
+			check(manaComponentOfCharacter);
+			manaComponentOfCharacter->changeManaDelegate.AddDynamic(this, &UW_ManaPoints::UpdateManaInfo);
+
+			UpdateManaInfo();
 		}
 	}
+}
+
+void UW_ManaPoints::UpdateManaInfo()
+{
+	check(manaComponentOfCharacter);
+
+	TB_CurrentMana->SetText(FText::FromString(FString::FromInt(manaComponentOfCharacter->GetMana())));
+	PB_ManaPoints->SetPercent(static_cast<float>(manaComponentOfCharacter->GetMana()) / manaComponentOfCharacter->GetMaxMana());
+	TB_MaxMana->SetText(FText::FromString(FString::FromInt(manaComponentOfCharacter->GetMaxMana())));
 }

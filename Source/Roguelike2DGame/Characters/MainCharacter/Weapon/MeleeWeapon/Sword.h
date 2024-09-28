@@ -21,26 +21,6 @@ public:
 
 public:
 
-	virtual void Attack_Implementation() override;
-
-	UFUNCTION(BlueprintCallable)
-	float GetDistanceAttack() { return distanceAttack; }
-	
-
-	
-	void SetDistanceAttack(float distance);
-
 	virtual bool DamageLevelUp() override;
 	virtual bool SpeedAttackLevelUp() override;
-
-protected:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float distanceAttack;
-
-	UPROPERTY(EditAnywhere)
-	float capsuleRadiusAttack;
-	UPROPERTY(EditAnywhere)
-	float capsuleHalfHeightAttack;
-	
 };

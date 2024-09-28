@@ -57,6 +57,16 @@ bool UBaseWeapon::SpeedAttackLevelUp()
 	return false;
 }
 
+void UBaseWeapon::StartAttack()
+{
+	if (GetCanAttack())
+	{
+		SetIsAttacking(true);
+		SetCanAttack(false);
+
+		GetOwner()->PlayAnimation(GetAttackAnimation());
+	}
+}
 
 void UBaseWeapon::FinishReload()
 {
@@ -91,6 +101,11 @@ void UBaseWeapon::AddSouls(const int count)
 	CHECK_WITH_LOG_WARNING(count < 0, "Can't add negative count \"souls\"")
 	
 	soulsCurrent += count;
+}
+
+ABasePaperCharacter* UBaseWeapon::GetOwner() const
+{
+	return owner.IsValid() ? owner.Get() : nullptr;
 }
 
 int UBaseWeapon::GetMaxLevel() const

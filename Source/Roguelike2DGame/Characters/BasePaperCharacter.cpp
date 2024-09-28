@@ -7,7 +7,9 @@
 #include "../GameModes/Game/MainGameMode.h"
 
 #include <GameFramework/CharacterMovementComponent.h>
+#include <PaperZDAnimInstance.h>
 #include <Kismet/GameplayStatics.h>
+
 
 
 
@@ -20,6 +22,8 @@ ABasePaperCharacter::ABasePaperCharacter()
 	//Restriction on movement along the Y axis
 	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
 	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Y);
+
+	m_bufferMovementMode = GetCharacterMovement()->MovementMode;
 }
 
 void ABasePaperCharacter::BeginPlay()
@@ -41,4 +45,22 @@ void ABasePaperCharacter::OnReloadAttack()
 void ABasePaperCharacter::OnEndAnimAttack()
 {
 	endAnimAttack.Broadcast();
+}
+
+void ABasePaperCharacter::EnableCharacterMovement()
+{
+	//GetCharacterMovement()->SetMovementMode(m_bufferMovementMode);
+	GetCharacterMovement()->Activate();
+}
+
+void ABasePaperCharacter::DisableCharacterMovement() 
+{	 
+	//m_bufferMovementMode = GetCharacterMovement()->MovementMode;
+	//GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->Deactivate();
+}
+
+void ABasePaperCharacter::PlayAnimation(FName nameAnim)
+{
+	GetAnimInstance()->JumpToNode(nameAnim);
 }

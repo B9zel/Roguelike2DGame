@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "../BaseWeapon.h"
-#include "../../../../Interfaces/Weapon/DistanceWeapon.h"
+#include "../../../../Interfaces/Weapon/FinishStageWeapon.h"
 #include "BaseDistanceWeapon.generated.h"
 
 
@@ -12,7 +12,7 @@
 
 
 UCLASS(Abstract, Blueprintable)
-class ROGUELIKE2DGAME_API UBaseDistanceWeapon : public UBaseWeapon, public IDistanceWeapon
+class ROGUELIKE2DGAME_API UBaseDistanceWeapon : public UBaseWeapon, public IFinishStageWeapon
 {
 	GENERATED_BODY()
 	

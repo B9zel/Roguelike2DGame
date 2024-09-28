@@ -30,7 +30,6 @@ enum class EWeaponType : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FImprove, const ETypeScroll&, scroll);
 
 
-
 USTRUCT(BlueprintType)
 struct FCharacterInputAction
 {
@@ -56,6 +55,8 @@ public:
 	UInputAction* selectSword;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* selectBow;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* selectScythe;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* inputMapping;
@@ -70,11 +71,7 @@ struct FCharacterAnimation
 public:
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
-	FName Jump;
-	UPROPERTY(EditAnywhere, Category = "Anim")
-	FName SwordAttack;
-	UPROPERTY(EditAnywhere, Category = "Anim")
-	FName BowAttack;
+	FName Jump;	
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName Dash;
 	UPROPERTY(EditAnywhere, Category = "Anim")
@@ -104,13 +101,13 @@ public:
 	
 	//Getters
 	UFUNCTION(BlueprintPure)
-	UBaseWeapon* GetActiveWeapon() const { return activeWeapon; }
+	UBaseWeapon* GetActiveWeapon() const			{ return activeWeapon; }
 	UFUNCTION(BlueprintPure)
-	TMap<EWeaponType, UBaseWeapon*>& GetWeapons()  { return weaponsObj; }
+	TMap<EWeaponType, UBaseWeapon*>& GetWeapons()	{ return weaponsObj; }
 	UFUNCTION(BlueprintPure)
-	UManaComponent* GetManaComponent() { return manaComponent; }
-	UFUNCTION()
-	float GetDefoultGravity() { return m_defoultGravity; }
+	UManaComponent* GetManaComponent()				{ return manaComponent; }
+	UFUNCTION()	
+	float GetDefoultGravity()						{ return m_defoultGravity; }
 
 
 	UFUNCTION(BlueprintCallable)
@@ -131,7 +128,8 @@ protected:
 	virtual void RightMove(const struct FInputActionInstance& instance);
 	virtual void OnAttack() override;
 	virtual void OnAttackHit() override;
-	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
+	virtual void OnDeath_Implementation(AActor* deadActor, AActor* Instigator) override;
+	virtual void OnEndAnimAttack() override;
 
 	void StopAttack();
 
@@ -141,12 +139,13 @@ protected:
 	// Change weapon
 	void SelectSword();
 	void SelectBow();
+	void SelectScythe();
 	void SwitchWeapon(const EWeaponType& type);
 
 public:
 
 	FImprove improveStatDelegate;
-
+	
 protected:
 
 	// Components

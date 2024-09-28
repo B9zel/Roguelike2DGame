@@ -10,6 +10,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthComponentDelegateOneParam, AActor*, instigatorDamage);
 
 
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROGUELIKE2DGAME_API UHealthComponent : public UActorComponent
 {

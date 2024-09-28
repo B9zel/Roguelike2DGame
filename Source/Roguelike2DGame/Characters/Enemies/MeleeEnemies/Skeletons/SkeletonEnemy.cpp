@@ -12,28 +12,9 @@
 
 ASkeletonEnemy::ASkeletonEnemy()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASkeletonEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-void ASkeletonEnemy::Tick(float deltaTime)
-{
-	Super::Tick(deltaTime);
-	
-	if (GetVelocity().X > 0)
-	{
-		SetActorRotation(FRotator(0, 0, 0));
-	}
-	else if (GetVelocity().X < 0)
-	{
-		SetActorRotation(FRotator(0, 180, 0));
-	}
-}
 
 void ASkeletonEnemy::OnAttack()
 {
@@ -41,22 +22,17 @@ void ASkeletonEnemy::OnAttack()
 	{
 		AMeleeEnemy::OnAttack();
 
-		GetAnimInstance()->JumpToNode(anim.attack);
+		PlayAnimation(anim.attack);
 	}
 }
 
 
-void ASkeletonEnemy::OnDeath(AActor* deadActor, AActor* InstigatorActor)
+void ASkeletonEnemy::OnDeath_Implementation(AActor* deadActor, AActor* InstigatorActor)
 {
 	Super::OnDeath(deadActor, InstigatorActor);
 	if (deadActor == this)
 	{
-		GetAnimInstance()->JumpToNode(anim.death);
-		DisableInput(GetController<APlayerController>());
-		
-
-		FTimerHandle timer;
-		GetWorld()->GetTimerManager().SetTimer(timer, this, &ASkeletonEnemy::Destroyer, timeDestroyAfterDeath, false);
+		PlayAnimation(anim.death);
 	}
 }
 
@@ -66,12 +42,8 @@ float ASkeletonEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 	if (!IsAttacking() && !healthComponent->GetIsDead())
 	{
-		GetAnimInstance()->JumpToNode(anim.takeDamage);
+		PlayAnimation(anim.takeDamage);
 	}
 	return DamageAmount;
 }
 
-void ASkeletonEnemy::Destroyer()
-{
-	Destroy();
-}

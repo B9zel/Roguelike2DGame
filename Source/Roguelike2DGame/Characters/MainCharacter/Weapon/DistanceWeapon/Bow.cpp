@@ -2,29 +2,66 @@
 
 
 #include "Bow.h"
+#include "../../../../Components/HealthManaComponent/ManaComponent.h"
+#include "../../../MainCharacter/MainPaperCharacter.h"
+#include "../../../BasePaperCharacter.h"
 #include "../../../../Data/Enums/EWeaponType.h"
 #include "Projectiles/Arrow.h"
-#include "../../../BasePaperCharacter.h"
+
+#include <GameFramework/CharacterMovementComponent.h>
+
+
 
 
 UBow::UBow()
 {
 	weaponType = EWeaponType::BOW;
+	costOfUse = 0;
 	isReady = false;
 }
 
-void UBow::StartAttack_Implementation()
+void UBow::PostInitProperties()
 {
+	Super::PostInitProperties();
+
+	if (GetWorld())
+	{
+		owningPleryCharacter = Cast<AMainPaperCharacter>(GetOwner());
+	}
+}
+
+void UBow::StartAttack()
+{
+	check(owningPleryCharacter);
+
+	UManaComponent* Mana = owningPleryCharacter->GetManaComponent();
+
+	if (!Mana || Mana->GetMana() < costOfUse) return;
+
+	if (GetOwner()->GetCharacterMovement()->IsWalking())
+	{
+		Super::StartAttack();
+		GetOwner()->DisableCharacterMovement();
+	}
+
 	SetIsReady(false);
 }
 
 void UBow::StopAttack_Implementation()
 {
 	SetIsAttacking(false);
-	if (!IsReady())
-	{
-		return;
-	}
+	SetCanAttack(true);
+	GetOwner()->EnableCharacterMovement();
+
+	if (!IsReady() || GetOwner()->GetCharacterMovement()->IsFalling()) return;
+
+
+	UManaComponent* Mana = owningPleryCharacter->GetManaComponent();
+
+	check(Mana);
+	Mana->SetMana(Mana->GetMana() - costOfUse);
+
+
 	FActorSpawnParameters spawnParam;
 	spawnParam.Instigator = GetOwner();
 	spawnParam.Owner = nullptr;

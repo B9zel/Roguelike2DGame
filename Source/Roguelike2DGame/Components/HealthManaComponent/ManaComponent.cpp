@@ -2,11 +2,21 @@
 #include "ManaComponent.h"
 
 
+
 UManaComponent::UManaComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+}
 
+void UManaComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (currentMana > maxMana)
+	{
+		currentMana = maxMana;
+	}
 }
 
 void UManaComponent::SetMaxMana(int newMax)
@@ -32,10 +42,12 @@ void UManaComponent::SetMana(int newMana)
 		return;
 	}
 	currentMana = newMana;
+	changeManaDelegate.Broadcast();
 }
 
 int UManaComponent::GetMana()
 {
 	return currentMana;
 }
+
 

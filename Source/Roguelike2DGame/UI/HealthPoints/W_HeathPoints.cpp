@@ -45,6 +45,7 @@ void UW_HeathPoints::PostInit(AActor* actor)
 		if (actor == ownerCharacter)
 		{
 			healthComponentOfCharacter = ownerCharacter->GetHealthComponent();
+			check(healthComponentOfCharacter);
 			healthComponentOfCharacter->takeDamageDelegate.AddDynamic(this, &UW_HeathPoints::UpdateHealth);
 
 			TB_CurrentHP->SetText(FText::FromString(FString::FromInt(healthComponentOfCharacter->GetCurrentHP())));

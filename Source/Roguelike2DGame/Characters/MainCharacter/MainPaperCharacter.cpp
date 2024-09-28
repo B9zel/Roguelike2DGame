@@ -16,9 +16,9 @@
 #include "../../Components/Artifacts/BaseArtifactComponent.h"
 #include "../../Components/Stat/CharacterStatsComponent.h"
 
-#include "../../Interfaces/Weapon/MeleeWeapon.h"
-#include "../../Interfaces/Weapon/DistanceWeapon.h"
+#include "../../Interfaces/Weapon/FinishStageWeapon.h"
 #include "../../Interfaces/Weapon/IReloadableWeapon.h"
+#include "../../Interfaces/Weapon/MeleeWeapon.h"
 #include "../../Interfaces/InteractInterface.h"
 
 #include "Weapon/BaseWeapon.h"
@@ -26,8 +26,7 @@
 #include "../Enemies/EnemyCharacter.h"
 
 #include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
-#include <PaperZDAnimationComponent.h>
-#include <PaperZDAnimInstance.h>
+//#include <PaperZDAnimationComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -111,12 +110,13 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 
 	enhuncedInput->BindAction(Input.selectSword, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectSword);
 	enhuncedInput->BindAction(Input.selectBow, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectBow);
+	enhuncedInput->BindAction(Input.selectScythe, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectScythe);
 }
 
 
 void AMainPaperCharacter::OnJumped_Implementation()
 {
-	GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Jump);
+	PlayAnimation(Anim.Jump);
 }
 
 void AMainPaperCharacter::OnWalkingOffLedge_Implementation(const FVector& PreviousFloorImpactNormal, const FVector& PreviousFloorContactNormal, const FVector& PreviousLocation, float TimeDelta)
@@ -154,7 +154,7 @@ void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverri
 {
 	Super::LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 
-	GetAnimationComponent()->GetAnimInstance()->JumpToNode(Anim.Dash);
+	PlayAnimation(Anim.Dash);
 }
 
 void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multiplier)
@@ -175,64 +175,43 @@ void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multipl
 
 void AMainPaperCharacter::OnAttack()
 {
-	if (activeWeapon->GetCanAttack())
-	{
-		if (dashSkillComponent->GetIsDashing())	return;
+	if (dashSkillComponent->GetIsDashing())	return;
 
-		activeWeapon->SetCanAttack(false);
-		activeWeapon->SetIsAttacking(true);
-
-
-		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()) && !GetCharacterMovement()->IsFalling())
-		{
-			Cast<IDistanceWeapon>(activeWeapon)->StartAttack_Implementation();
-			GetCharacterMovement()->Deactivate();
-			GetAnimInstance()->JumpToNode(Anim.BowAttack);
-		}
-		else if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
-		{
-			GetAnimInstance()->JumpToNode(Anim.SwordAttack);
-		}
-	}
+	activeWeapon->StartAttack();
 }
 
 void AMainPaperCharacter::OnAttackHit()
 {
 	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UMeleeWeapon::StaticClass()))
 	{
+		Cast<IMeleeWeapon>(activeWeapon)->Attack_Implementation();
 		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UReloadableWeapon::StaticClass()))
 		{
 			Cast<IReloadableWeapon>(activeWeapon)->StartReload_Implementation();
 		}
-		Cast<IMeleeWeapon>(activeWeapon)->Attack_Implementation();
 	}
 }
 
 void AMainPaperCharacter::StopAttack()
 {
-	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UDistanceWeapon::StaticClass()))
-	{	
-		if (!activeWeapon->IsAttacking())
-		{
-			return;
-		}
-		if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UReloadableWeapon::StaticClass()))
-		{
-			Cast<IReloadableWeapon>(activeWeapon)->StartReload_Implementation();
-		}
-		GetCharacterMovement()->Activate();
-		Cast<IDistanceWeapon>(activeWeapon)->StopAttack_Implementation();
+	if (!activeWeapon->IsAttacking()) return;
+	if (!UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UFinishStageWeapon::StaticClass())) return;
+		
+
+	if (UKismetSystemLibrary::DoesImplementInterface(activeWeapon, UReloadableWeapon::StaticClass()))
+	{
+		Cast<IReloadableWeapon>(activeWeapon)->StartReload_Implementation();
 	}
+	Cast<IFinishStageWeapon>(activeWeapon)->StopAttack_Implementation();
 }
 
-
-void AMainPaperCharacter::OnDeath(AActor* deadActor, AActor* InstigatorActor)
+void AMainPaperCharacter::OnDeath_Implementation(AActor* deadActor, AActor* InstigatorActor)
 {
-	Super::OnDeath(deadActor, InstigatorActor);
+	Super::OnDeath_Implementation(deadActor, InstigatorActor);
 
 	if (deadActor == this)
 	{
-		GetAnimInstance()->JumpToNode(Anim.Death);
+		PlayAnimation(Anim.Death);
 		InputDisable();
 	}
 	else if (InstigatorActor == this)
@@ -240,6 +219,7 @@ void AMainPaperCharacter::OnDeath(AActor* deadActor, AActor* InstigatorActor)
 		GetActiveWeapon()->AddSouls(Cast<AEnemyCharacter>(deadActor)->GetSoulsDrop());
 	}
 }
+
 
 void AMainPaperCharacter::UseRightArtifact()
 {
@@ -294,6 +274,11 @@ void AMainPaperCharacter::SelectBow()
 	SwitchWeapon(EWeaponType::BOW);
 }
 
+void AMainPaperCharacter::SelectScythe()
+{
+	SwitchWeapon(EWeaponType::SCYTHE);
+}
+
 void AMainPaperCharacter::InputEnable()
 {
 	EnableInput(GetController<APlayerController>());
@@ -302,4 +287,9 @@ void AMainPaperCharacter::InputEnable()
 void AMainPaperCharacter::InputDisable()
 {
 	DisableInput(GetController<APlayerController>());
+}
+
+void AMainPaperCharacter::OnEndAnimAttack()
+{
+	GetActiveWeapon()->OnEndAnimationAttack();
 }

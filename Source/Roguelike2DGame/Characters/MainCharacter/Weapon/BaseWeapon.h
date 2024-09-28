@@ -8,7 +8,7 @@
 
 
 #define CHECK_WITH_LOG_WARNING(CheckIs, Text) {  \
-			if (CheckIs) {UE_LOG(LogTemp, Warning, TEXT(Text)); return; \
+			if (CheckIs) { UE_LOG(LogTemp, Warning, TEXT(Text)); return; \
 			}}
 
 class ABasePaperCharacter;
@@ -35,7 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool SpeedAttackLevelUp();
 
-	
+	virtual void OnEndAnimationAttack() {};
+	virtual void StartAttack();
+	virtual void SetTimeReload(const float time) PURE_VIRTUAL(UBaseWeapon::SetTimeReload, );
+
 	// Getters
 	UFUNCTION(BlueprintPure)
 	virtual float GetTimeReload()					{ return 0; }
@@ -54,13 +57,15 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetLevelSpeedAttack() const					{ return currentLevelSpeedAttack; }
 	UFUNCTION(BlueprintPure)
-	ABasePaperCharacter* GetOwner() const			{ return owner; }
+	ABasePaperCharacter* GetOwner() const;
 	UFUNCTION(BlueprintPure)
 	const EWeaponType& GetWeaponType() const		{ return weaponType; }
 	UFUNCTION(BlueprintPure)
 	int GetDamage() const							{ return damage; }
 	UFUNCTION(BlueprintPure)
 	ULevelConfigDataAsset* GetConfigLevelOfWeapon() { return configLevel; }
+	UFUNCTION(BlueprintPure)
+	FName GetAttackAnimation() const				{ return AttackAnimation; }
 	UFUNCTION(BlueprintPure)
 	int GetMaxLevel() const;
 	UFUNCTION(BlueprintPure)
@@ -75,14 +80,14 @@ public:
 
 	// Setters
 	UFUNCTION()
-	void SetOwner(ABasePaperCharacter* character) { owner = character; }
+	void SetOwner(TWeakObjectPtr<ABasePaperCharacter> character) { owner = character; }
 	UFUNCTION(BlueprintCallable)
-	void SetCanAttack(const bool can)			  { canAttack = can; }
+	void SetCanAttack(const bool can)							{ canAttack = can; }
 	UFUNCTION(BlueprintCallable)
-	void SetIsAttacking(const bool is)			  { isAttacking = is; }
+	void SetIsAttacking(const bool is)							{ isAttacking = is; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsReady(const bool is)				  { isReady = is; }
+	void SetIsReady(const bool is)								{ isReady = is; }
 	UFUNCTION(BlueprintCallable)
 	void SetSouls(const int souls);
 	UFUNCTION(BlueprintCallable)
@@ -91,9 +96,6 @@ public:
 	void SetLeveSpeedAttack(const int level);
 	UFUNCTION()
 	void SetDamage(const int newDamage);
-
-	//UFUNCTION(BlueprintCallable)
-	virtual void SetTimeReload(const float time) PURE_VIRTUAL(UBaseWeapon::SetTimeReload, );
 
 
 	UFUNCTION(BlueprintCallable)
@@ -105,11 +107,10 @@ protected:
 
 protected:
 
+	TWeakObjectPtr<ABasePaperCharacter> owner;
+
 	UPROPERTY()
-	EWeaponType weaponType;
-	UPROPERTY()
-	ABasePaperCharacter* owner;
-	
+	EWeaponType weaponType;	
 	UPROPERTY(EditAnywhere)
 	TArray<TEnumAsByte<EObjectTypeQuery>> typesAttackCollision; // types of collision, that can be attacked
 	UPROPERTY()
@@ -120,6 +121,7 @@ protected:
 	bool canAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", UIMin = "0"))
 	int damage;
+
 	bool isAttacking;
 	bool isReady;
 
@@ -134,11 +136,14 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "1", UIMin = "1"))
 	int currentLevelSpeedAttack;
 
-	UPROPERTY(EditAnywhere)
-	ULevelConfigDataAsset* configLevel;
-
 	// Value, that change damage
 	UPROPERTY(EditAnywhere)
 	float levelUpDamage;
 
+	UPROPERTY(EditAnywhere)
+	ULevelConfigDataAsset* configLevel;
+
+	// Anim
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName AttackAnimation;
 };

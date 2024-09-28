@@ -3,23 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DistanceWeapon.generated.h"
+#include "FinishStageWeapon.generated.h"
 
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class UDistanceWeapon : public UInterface
+class UFinishStageWeapon : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class ROGUELIKE2DGAME_API IDistanceWeapon
+class ROGUELIKE2DGAME_API IFinishStageWeapon
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void StartAttack();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void StopAttack();
 };

@@ -25,6 +25,9 @@ protected:
 	UFUNCTION()
 	void PostInit(AActor* actorSpawn);
 
+	UFUNCTION()
+	void UpdateManaInfo();
+
 protected:
 
 	// Bind property

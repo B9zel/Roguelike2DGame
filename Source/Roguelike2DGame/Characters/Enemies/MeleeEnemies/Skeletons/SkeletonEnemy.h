@@ -34,18 +34,11 @@ public:
 
 protected:
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float deltaTime) override;
 	virtual void OnAttack() override;
-	virtual void OnDeath(AActor* deadActor, AActor* Instigator) override;
+	virtual void OnDeath_Implementation(AActor* deadActor, AActor* Instigator) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
-	void Destroyer();
-
 protected:
-
-	UPROPERTY(EditAnywhere)
-	float timeDestroyAfterDeath;
 
 	UPROPERTY(EditAnywhere)
 	FSkeletonAnimation anim;
