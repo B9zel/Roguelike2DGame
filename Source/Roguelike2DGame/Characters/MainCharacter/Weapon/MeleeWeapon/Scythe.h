@@ -20,9 +20,14 @@ public:
 
 public:
 
+	virtual void PostInitProperties() override;
 	virtual bool DamageLevelUp() override;
 	virtual bool SpeedAttackLevelUp() override;
 	virtual void StartAttack() override;
 	virtual void OnEndAnimationAttack() override;
 	
+private:
+
+	UFUNCTION()
+	void OnLendedOwnerCharacter(const FHitResult& Hit);
 };

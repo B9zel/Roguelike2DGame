@@ -38,11 +38,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCanAttack(bool isAttack) { canAttack = isAttack; }
 
-protected:
 
 	virtual void OnAttack() override;
-	virtual void OnAttackHit() override;
 	virtual void OnEndAnimAttack() override;
+	virtual void OnAttackHit() override;
+
+protected:
+
 	virtual void OnReloadAttack() override;
 
 protected:

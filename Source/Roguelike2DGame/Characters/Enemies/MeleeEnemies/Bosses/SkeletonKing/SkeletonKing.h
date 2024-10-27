@@ -9,6 +9,8 @@
 
 
 class ASkeletonEnemy;
+enum class EBossStage : uint8;
+
 
 
 UCLASS()
@@ -16,13 +18,19 @@ class ROGUELIKE2DGAME_API ASkeletonKing : public AMeleeEnemy
 {
 	GENERATED_BODY()
 public:
+
 	ASkeletonKing();
 	
 protected:
-	UFUNCTION(BlueprintCallable)
-	ASkeletonEnemy* SpawnSkeletMinion();
 
 	virtual void OnDeath_Implementation(AActor* deadActor, AActor* Instigator) override;
+
+	UFUNCTION(BlueprintCallable)
+	ASkeletonEnemy* SpawnSkeletMinion();
+	UFUNCTION(BlueprintPure)
+	EBossStage GetCurrentStage();
+	UFUNCTION(BlueprintCallable)
+	void SetStage(const EBossStage& newStage);
 
 private:
 	UFUNCTION()
@@ -30,14 +38,7 @@ private:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
-	float timeSpawnSkeletons;
-	UPROPERTY(EditAnywhere)
-	int maxSkeletons;
-	UPROPERTY(EditAnywhere)
-	float timeBirth;
-
-	int currenSkeletons;
+	EBossStage currentStage;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ASkeletonEnemy> skeletonClass;

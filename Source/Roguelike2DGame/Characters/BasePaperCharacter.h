@@ -45,6 +45,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void OnDeath_Implementation(AActor* deadActor, AActor* instigatorActor) {}
 
 	// Call in animation blueprint, when weapon hit with enemy
 	UFUNCTION(BlueprintCallable)
@@ -53,7 +54,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath(AActor* deadActor, AActor* instigatorActor);
 
-	virtual void OnDeath_Implementation(AActor* deadActor, AActor* instigatorActor) {}
 
 	UFUNCTION()
 	virtual void OnSpawn(AActor* deadActor) {}
@@ -77,6 +77,7 @@ protected:
 	UHealthComponent* healthComponent;
 
 	FTimerHandle attackReloadTimer;
+
 
 private:
 

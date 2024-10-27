@@ -29,7 +29,7 @@ public:
 	int GetSoulsDrop() { return countDropSouls; }
 	UFUNCTION(BlueprintCallable)
 	float GetDistanceAttack() { return distanceAttack; }
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	int GetDamage() { return damage; }
 	UFUNCTION(BlueprintCallable)
 	TArray<TEnumAsByte<EObjectTypeQuery>>& GetTypesAttackCollision() { return typesAttackCollision; }

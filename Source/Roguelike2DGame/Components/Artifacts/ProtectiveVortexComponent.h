@@ -4,30 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "BaseArtifactComponent.h"
-#include "../../Interfaces/InteractInterface.h"
+#include "../../Data/ResourceLoader.h"
 #include "ProtectiveVortexComponent.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class ROGUELIKE2DGAME_API UProtectiveVortexComponent : public UBaseArtifactComponent, public IInteract
+UCLASS(Blueprintable, BlueprintType)
+class ROGUELIKE2DGAME_API UProtectiveVortexComponent : public UBaseArtifactComponent
 {
 	GENERATED_BODY()
 
 protected:
 
-	virtual void BeginPlay() override;
-
 	virtual void Interact_Implementation(AActor* interactiveActor) override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	
 protected:
 
 	UPROPERTY(EditAnywhere)
-	float powerImpulse;
-	UPROPERTY(EditAnywhere)
-	float radius;
-	
+	TSoftClassPtr<AActor> ProtectedField;
+
+private:
+
+	LoaderHandle loadFieldHandle;
+
 };

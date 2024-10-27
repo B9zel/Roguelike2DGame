@@ -62,3 +62,4 @@ void UBaseMeleeWeapon::OnEndAnimationAttack()
 
 	SetIsAttacking(false);
 }
+

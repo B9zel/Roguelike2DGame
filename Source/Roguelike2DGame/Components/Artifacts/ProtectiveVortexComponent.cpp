@@ -2,22 +2,28 @@
 
 
 #include "ProtectiveVortexComponent.h"
+#include <Components/SphereComponent.h>
 
-void UProtectiveVortexComponent::BeginPlay()
-{
-	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
-}
+
+
 
 void UProtectiveVortexComponent::Interact_Implementation(AActor* interactiveActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("interact"));
+	if (GetCanUse())
+	{
+		if (!loadFieldHandle.IsValid())
+		{
+			ResourceLoader::ResourceSyncLoad(loadFieldHandle, ProtectedField.ToSoftObjectPath());
+		}
+
+		FActorSpawnParameters spawnParam;
+		GetWorld()->SpawnActor<AActor>(Cast<UClass>(ResourceLoader::GetData(loadFieldHandle)), GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation(), spawnParam);
+	}
 }
 
 void UProtectiveVortexComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	UE_LOG(LogTemp, Warning, TEXT("EndPlay"));
 }

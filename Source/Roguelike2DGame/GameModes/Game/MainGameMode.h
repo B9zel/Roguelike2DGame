@@ -25,7 +25,9 @@ protected:
 	virtual void EndPlay(EEndPlayReason::Type ReasonEndPlay) override;
 
 public:
-
+	
+	UPROPERTY(BlueprintAssignable)
 	FMainGameModeDelegateTwoParam deathDeligate;
+	UPROPERTY(BlueprintAssignable)
 	FMainGameModeDelegateOneParam spawnDeligate;
 };

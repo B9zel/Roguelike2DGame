@@ -21,6 +21,32 @@ public:
 
 public:
 
+	virtual void PostInitProperties() override;
+
+	virtual void StartAttack() override;
+	virtual void Attack_Implementation();
+	virtual void StartAnimAttack() override;
+	virtual void OnEndAnimationAttack() override;
 	virtual bool DamageLevelUp() override;
 	virtual bool SpeedAttackLevelUp() override;
+
+private:
+
+	void ResetAttackAnim();
+
+	UFUNCTION()
+	void OnLendedOwnerCharacter(const FHitResult& Hit);
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	FName SecondAttackAnimation;
+
+	UPROPERTY(EditAnywhere)
+	float TimeAttackCombo;
+
+private:
+
+	FTimerHandle m_TimeBetweenAttackHandle;
+	bool m_CanUseSecondAttack;
 };

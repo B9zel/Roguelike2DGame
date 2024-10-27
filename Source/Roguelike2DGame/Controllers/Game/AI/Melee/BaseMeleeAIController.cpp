@@ -23,11 +23,6 @@ ABaseMeleeAIController::ABaseMeleeAIController()
 	actorToAttack = nullptr;
 }
 
-//const AMeleeEnemy* ABaseMeleeAIController::GetControlledCharacter()
-//{
-//	return controlledCharacter;
-//}
-//
 FVector ABaseMeleeAIController::GetDistancePatrolling()
 {
 	return distancePatrolling;
@@ -71,12 +66,6 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 		GetBlackboardComponent()->SetValueAsObject(actorToAttackKey, actorToAttack);
 	}
 }
-
-//
-//void ABaseMeleeAIController::OnRealoadAttackCharacter()
-//{
-//	OnAttckCharacter();
-//}
 
 void ABaseMeleeAIController::OnDeathControlledCharacter(AActor* actor, AActor* InstigatorActor)
 {

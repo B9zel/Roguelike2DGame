@@ -29,7 +29,7 @@ void ASkeletonEnemy::OnAttack()
 
 void ASkeletonEnemy::OnDeath_Implementation(AActor* deadActor, AActor* InstigatorActor)
 {
-	Super::OnDeath(deadActor, InstigatorActor);
+	Super::OnDeath_Implementation(deadActor, InstigatorActor);
 	if (deadActor == this)
 	{
 		PlayAnimation(anim.death);

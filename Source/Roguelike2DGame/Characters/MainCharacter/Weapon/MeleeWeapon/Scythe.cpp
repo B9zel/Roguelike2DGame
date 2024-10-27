@@ -19,6 +19,18 @@ UScythe::UScythe()
 	timeReload = 0.5f;
 }
 
+
+
+void UScythe::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (GetWorld())
+	{
+		GetOwner()->LandedDelegate.AddDynamic(this, &UScythe::OnLendedOwnerCharacter);
+	}
+}
+
 bool UScythe::DamageLevelUp()
 {
 	if (Super::DamageLevelUp())
@@ -59,3 +71,10 @@ void UScythe::OnEndAnimationAttack()
 }
 
 
+void UScythe::OnLendedOwnerCharacter(const FHitResult& Hit)
+{
+	if (IsAttacking())
+	{
+		GetOwner()->DisableCharacterMovement();
+	}
+}

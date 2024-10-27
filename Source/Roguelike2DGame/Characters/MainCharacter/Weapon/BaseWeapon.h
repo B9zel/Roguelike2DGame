@@ -38,6 +38,7 @@ public:
 	virtual void OnEndAnimationAttack() {};
 	virtual void StartAttack();
 	virtual void SetTimeReload(const float time) PURE_VIRTUAL(UBaseWeapon::SetTimeReload, );
+	virtual void StartAnimAttack();
 
 	// Getters
 	UFUNCTION(BlueprintPure)

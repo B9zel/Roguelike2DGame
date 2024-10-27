@@ -64,8 +64,13 @@ void UBaseWeapon::StartAttack()
 		SetIsAttacking(true);
 		SetCanAttack(false);
 
-		GetOwner()->PlayAnimation(GetAttackAnimation());
+		StartAnimAttack();
 	}
+}
+
+void UBaseWeapon::StartAnimAttack()
+{
+	GetOwner()->PlayAnimation(GetAttackAnimation());
 }
 
 void UBaseWeapon::FinishReload()
