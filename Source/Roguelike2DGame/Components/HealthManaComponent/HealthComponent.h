@@ -23,15 +23,15 @@ public:
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintPure)
 	int32 GetCurrentHP();
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintPure)
 	int32 GetMaxHP();
+	UFUNCTION(BlueprintPure)
+	bool GetIsDead();
 
 	void SetCurrentHP(int32 newHP);
 	void SetMaxHP(int32 newMax);
-
-	bool GetIsDead();
 
 protected:
 

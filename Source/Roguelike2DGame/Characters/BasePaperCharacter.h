@@ -42,6 +42,8 @@ public:
 	void EnableCharacterMovement();
 	void DisableCharacterMovement();
 
+	void ResetMove();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -49,7 +51,7 @@ protected:
 
 	// Call in animation blueprint, when weapon hit with enemy
 	UFUNCTION(BlueprintCallable)
-	virtual void OnAttackHit() PURE_VIRTUAL(ABasePaperCharacter::OnAttackHit, );
+	virtual void OnAttackHit();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath(AActor* deadActor, AActor* instigatorActor);
@@ -68,6 +70,8 @@ public:
 	FBaseCharacterDelegateWithoutParam endAnimAttack;
 	UPROPERTY(BlueprintAssignable)
 	FBaseCharacterDelegateWithoutParam reloadAttack;
+	UPROPERTY(BlueprintAssignable)
+	FBaseCharacterDelegateWithoutParam hitAttack;
 
 protected:
 

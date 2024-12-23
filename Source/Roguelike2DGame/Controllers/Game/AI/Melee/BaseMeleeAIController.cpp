@@ -53,7 +53,7 @@ void ABaseMeleeAIController::OnTargetPerceptionUpdate(AActor* Actor, FAIStimulus
 	if (Actor->ActorHasTag("PlayerCharacter"))
 	{
 		bool success = Stimulus.WasSuccessfullySensed();
-		GetBlackboardComponent()->SetValueAsBool(isAttckKeyName, success);
+		GetBlackboardComponent()->SetValueAsBool(isAttackKeyName, success);
 		if (success)
 		{
 			actorToAttack = Actor;

@@ -66,7 +66,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	ULevelConfigDataAsset* GetConfigLevelOfWeapon() { return configLevel; }
 	UFUNCTION(BlueprintPure)
-	FName GetAttackAnimation() const				{ return AttackAnimation; }
+	FName GetNameAttackAnimation() const				{ return AttackAnimation; }
 	UFUNCTION(BlueprintPure)
 	int GetMaxLevel() const;
 	UFUNCTION(BlueprintPure)

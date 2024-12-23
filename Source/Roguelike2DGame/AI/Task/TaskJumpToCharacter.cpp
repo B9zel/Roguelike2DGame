@@ -2,7 +2,7 @@
 
 
 #include "TaskJumpToCharacter.h"
-#include "../../Controllers/Game/AI/Melee/SkeletonKingAIController.h"
+#include "../../Controllers/Game/AI/BaseAIController.h"
 
 #include <BehaviorTree/BlackboardComponent.h>
 #include <GameFramework/Character.h>
@@ -13,7 +13,6 @@
 
 UTaskJumpToCharacter::UTaskJumpToCharacter()
 {
-	JumpForce = 1000;
 	JumpHeight = 800;
 	JumpZDirection = 0.5;
 
@@ -34,7 +33,7 @@ EBTNodeResult::Type UTaskJumpToCharacter::ExecuteTask(UBehaviorTreeComponent& Ow
 	ACharacter* characterTo = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(CharacterToKey.SelectedKeyName));
 	if (!owningController)
 	{
-		owningController = Cast<ASkeletonKingAIController>(OwnerComp.GetAIOwner());
+		owningController = Cast<ABaseAIController>(OwnerComp.GetAIOwner());
 	}
 	if (!ownerCharacter)
 	{

@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #include "MainPaperCharacter.h"
+
 #include "../../Data/DataAssets/ArtifactUsedDataAsset.h"
 #include "../../Data/Enums/EtypeScroll.h"
 #include "../../Data/Enums/EWeaponType.h"
@@ -9,24 +9,24 @@
 
 #include "../../HUD/Game/HUDGame.h"
 
+#include "../../Components/Artifacts/BaseArtifactComponent.h"
 #include "../../Components/HealthManaComponent/HealthComponent.h"
 #include "../../Components/HealthManaComponent/ManaComponent.h"
-#include "../../Components/Skills/DoublejumpSkillComponent.h"
 #include "../../Components/Skills/DashSkillComponent.h"
-#include "../../Components/Artifacts/BaseArtifactComponent.h"
+#include "../../Components/Skills/DoublejumpSkillComponent.h"
+#include "../../Components/Skills/ClimbSkillComponent.h"
 #include "../../Components/Stat/CharacterStatsComponent.h"
 
+#include "../../Interfaces/InteractInterface.h"
 #include "../../Interfaces/Weapon/FinishStageWeapon.h"
 #include "../../Interfaces/Weapon/IReloadableWeapon.h"
 #include "../../Interfaces/Weapon/MeleeWeapon.h"
-#include "../../Interfaces/InteractInterface.h"
 
 #include "Weapon/BaseWeapon.h"
 
 #include "../Enemies/EnemyCharacter.h"
 
 #include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
-//#include <PaperZDAnimationComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -52,14 +52,17 @@ AMainPaperCharacter::AMainPaperCharacter()
 
 	doubleJumpSkillComponent = CreateDefaultSubobject<UDoublejumpSkillComponent>(TEXT("Double jump"));
 
-	m_defoultGravity = 0;
+	climbComponent = CreateDefaultSubobject<UClimbSkillComponent>(TEXT("Climb"));
+
+	m_defaultGravity = 0;
+	m_isCurrentMove = false;
 }
 
 void AMainPaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	m_defoultGravity = GetCharacterMovement()->GravityScale;
+	m_defaultGravity = GetCharacterMovement()->GravityScale;
 
 	UArtifactUsedDataAsset* artifactDataAsset = GetOwner<AGamePlayerController>()->GetArtifactDataAsset();
 	m_rightActiveArtifact = &artifactDataAsset->rightArtifact.artifact;
@@ -94,23 +97,23 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent* inputCompon
 			}
 		}
 	}
-	UEnhancedInputComponent* enhuncedInput = Cast<UEnhancedInputComponent>(inputComponent);
+	UEnhancedInputComponent* enhancedInput = Cast<UEnhancedInputComponent>(inputComponent);
 	
 	
-	enhuncedInput->BindAction(Input.actionRun, ETriggerEvent::Triggered, this, &AMainPaperCharacter::RightMove);
+	enhancedInput->BindAction(Input.actionRun, ETriggerEvent::Triggered, this, &AMainPaperCharacter::RightMove);
 
-	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Started, this, &AMainPaperCharacter::Jump);
-	enhuncedInput->BindAction(Input.actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
+	enhancedInput->BindAction(Input.actionJump, ETriggerEvent::Started, this, &AMainPaperCharacter::Jump);
+	enhancedInput->BindAction(Input.actionJump, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopJumping);
 
-	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
-	enhuncedInput->BindAction(Input.actionAttack, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopAttack);
+	enhancedInput->BindAction(Input.actionAttack, ETriggerEvent::Started, this, &AMainPaperCharacter::OnAttack);
+	enhancedInput->BindAction(Input.actionAttack, ETriggerEvent::Completed, this, &AMainPaperCharacter::StopAttack);
 
-	enhuncedInput->BindAction(Input.useFirstArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseRightArtifact);
-	enhuncedInput->BindAction(Input.useSecondArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseLeftArtifact);
+	enhancedInput->BindAction(Input.useFirstArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseRightArtifact);
+	enhancedInput->BindAction(Input.useSecondArtifact, ETriggerEvent::Started, this, &AMainPaperCharacter::UseLeftArtifact);
 
-	enhuncedInput->BindAction(Input.selectSword, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectSword);
-	enhuncedInput->BindAction(Input.selectBow, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectBow);
-	enhuncedInput->BindAction(Input.selectScythe, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectScythe);
+	enhancedInput->BindAction(Input.selectSword, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectSword);
+	enhancedInput->BindAction(Input.selectBow, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectBow);
+	enhancedInput->BindAction(Input.selectScythe, ETriggerEvent::Started, this, &AMainPaperCharacter::SelectScythe);
 }
 
 
@@ -138,8 +141,12 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 	AddMovementInput(FVector(1,0,0), scale);
 
 	if (scale == 0)
+	{
+		m_isCurrentMove = false;
 		return;
+	}
 	
+	m_isCurrentMove = true;
 	if (scale < 0)
 	{
 		GetController()->SetControlRotation(FRotator(0, 180, 0));		
@@ -150,12 +157,6 @@ void AMainPaperCharacter::RightMove(const FInputActionInstance& instance)
 	}
 }
 
-void AMainPaperCharacter::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride)
-{
-	Super::LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
-
-	PlayAnimation(Anim.Dash);
-}
 
 void AMainPaperCharacter::ImproveStat(const ETypeScroll& typeStat, float multiplier)
 {
@@ -205,13 +206,15 @@ void AMainPaperCharacter::StopAttack()
 	Cast<IFinishStageWeapon>(activeWeapon)->StopAttack_Implementation();
 }
 
+
+
 void AMainPaperCharacter::OnDeath_Implementation(AActor* deadActor, AActor* InstigatorActor)
 {
 	Super::OnDeath_Implementation(deadActor, InstigatorActor);
 
 	if (deadActor == this)
 	{
-		PlayAnimation(Anim.Death);
+		DisableCharacterMovement();
 		InputDisable();
 	}
 	else if (InstigatorActor == this)
@@ -256,6 +259,11 @@ void AMainPaperCharacter::SwitchWeapon(const EWeaponType& type)
 	}
 }
 
+void AMainPaperCharacter::PlayDashAnim()
+{
+	PlayAnimation(Anim.Dash);
+}
+
 void AMainPaperCharacter::AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<class UBaseWeapon> newWeapon)
 {
 	if (!weaponsObj.Contains(typeWeapon))
@@ -292,4 +300,22 @@ void AMainPaperCharacter::InputDisable()
 void AMainPaperCharacter::OnEndAnimAttack()
 {
 	GetActiveWeapon()->OnEndAnimationAttack();
+}
+
+void AMainPaperCharacter::Jump()
+{
+	if (!climbComponent->IsActive())
+	{
+		Super::Jump();
+		return;
+	}
+
+	if (!climbComponent->IsClimbing())
+	{
+		Super::Jump();
+		return;
+	}
+	FPoint2D force = climbComponent->GetForceJumpOffWall();
+	GetController()->SetControlRotation(FRotator(0.0, GetActorRotation().Yaw + 180, 0.0));
+	LaunchCharacter(FVector((-GetActorForwardVector() * force.X).X, 0.0f, force.Z), true, true);
 }

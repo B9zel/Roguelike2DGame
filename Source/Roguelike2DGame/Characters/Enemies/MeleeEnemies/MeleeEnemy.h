@@ -60,6 +60,6 @@ protected:
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UBoxComponent* collisonBoxComponent;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	//class UBoxComponent* collisionBoxComponent;
 };

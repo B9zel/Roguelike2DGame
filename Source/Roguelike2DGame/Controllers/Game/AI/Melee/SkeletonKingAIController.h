@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "../BaseAIController.h"
 #include "SkeletonKingAIController.generated.h"
 
 
@@ -12,21 +12,13 @@ class ASkeletonKing;
 
 
 UCLASS()
-class ROGUELIKE2DGAME_API ASkeletonKingAIController : public AAIController
+class ROGUELIKE2DGAME_API ASkeletonKingAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 
 public:
 
 	ASkeletonKingAIController();
-
-public:
-
-	UFUNCTION(BlueprintCallable)
-	void JumpSetup();
-
-	UFUNCTION(BlueprintCallable)
-	void StopJumpSetup();
 
 protected:
 
@@ -36,11 +28,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	ASkeletonKing* owningCharacter;
-
-	UPROPERTY(EditAnywhere, Category="Init param")
-	float gravityJump;
-
-private:
-
-	float defaultGravityScale;
 };

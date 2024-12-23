@@ -17,8 +17,8 @@
 
 AMeleeEnemy::AMeleeEnemy()
 {
-	collisonBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
-	collisonBoxComponent->SetupAttachment(GetRootComponent());
+	//collisionBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
+	//collisionBoxComponent->SetupAttachment(GetRootComponent());
 
 	timeStayInPatrolling = 1.0f;
 	timeReloadAttack = 1.0f;
@@ -40,6 +40,8 @@ void AMeleeEnemy::OnAttack()
 
 void AMeleeEnemy::OnAttackHit()
 {
+	Super::OnAttackHit();
+
 	TArray<AActor*> actorsIgnore;
 	TArray<FHitResult> res;
 	TSubclassOf<UDamageType> damageType;
@@ -56,6 +58,7 @@ void AMeleeEnemy::OnEndAnimAttack()
 {
 	Super::OnEndAnimAttack();
 
+	SetIsAttacking(false);
 	GetCharacterMovement()->SetActive(true);
 	GetWorld()->GetTimerManager().SetTimer(attackReloadTimer, this, &AMeleeEnemy::OnReloadAttack, GetTimeReloadAttack(), false);
 }

@@ -8,7 +8,7 @@
 
 
 
-class ASkeletonKingAIController;
+class ABaseAIController;
 
 
 UCLASS()
@@ -39,8 +39,6 @@ public:
 	FBlackboardKeySelector CharacterToKey;
 
 	UPROPERTY(EditAnywhere)
-	float JumpForce;
-	UPROPERTY(EditAnywhere)
 	float JumpHeight;
 
 	UPROPERTY(EditAnywhere, meta = (ClampMin='0', ClapmMax="1.0"))
@@ -48,7 +46,7 @@ public:
 
 private:
 
-	ASkeletonKingAIController* owningController;
+	ABaseAIController* owningController;
 	ACharacter* ownerCharacter;
 
 	bool isLanded = true;

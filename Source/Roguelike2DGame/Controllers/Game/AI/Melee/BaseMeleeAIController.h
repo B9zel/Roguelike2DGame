@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "../BaseAIController.h"
 #include "BaseMeleeAIController.generated.h"
 
 class AMeleeEnemy;
 
 
 UCLASS()
-class ROGUELIKE2DGAME_API ABaseMeleeAIController : public AAIController
+class ROGUELIKE2DGAME_API ABaseMeleeAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 
@@ -52,7 +52,7 @@ protected:
 	float timeStay;
 
 	UPROPERTY(EditAnywhere)
-	FName isAttckKeyName;
+	FName isAttackKeyName;
 
 	UPROPERTY(EditAnywhere)
 	FName actorToAttackKey;

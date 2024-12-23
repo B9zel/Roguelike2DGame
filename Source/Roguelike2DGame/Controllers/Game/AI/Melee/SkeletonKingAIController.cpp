@@ -13,16 +13,7 @@ ASkeletonKingAIController::ASkeletonKingAIController()
 	defaultGravityScale = 1.0f;
 }
 
-void ASkeletonKingAIController::JumpSetup()
-{
-	defaultGravityScale = owningCharacter->GetCharacterMovement()->GravityScale;
-	owningCharacter->GetCharacterMovement()->GravityScale = gravityJump;
-}
 
-void ASkeletonKingAIController::StopJumpSetup()
-{
-	owningCharacter->GetCharacterMovement()->GravityScale = defaultGravityScale;
-}
 
 void ASkeletonKingAIController::OnPossess(APawn* PawnTo)
 {

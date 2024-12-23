@@ -54,6 +54,7 @@ void UDashSkillComponent::Dash()
 		m_ownerCharacter->GetCharacterMovement()->Velocity = forward;
 
 		m_ownerCharacter->LaunchCharacter((forward * powerDash), false, false);
+		m_ownerCharacter->PlayDashAnim();
 
 		FTimerHandle handle;
 		GetWorld()->GetTimerManager().SetTimer(handle, this, &UDashSkillComponent::OnStopDash, timeDash, false);
@@ -64,7 +65,7 @@ void UDashSkillComponent::OnStopDash()
 {
 	m_ownerCharacter->InputEnable();
 	m_ownerCharacter->GetCharacterMovement()->Velocity = FVector(0.f);
-	m_ownerCharacter->GetCharacterMovement()->GravityScale = m_ownerCharacter->GetDefoultGravity();
+	m_ownerCharacter->GetCharacterMovement()->GravityScale = m_ownerCharacter->GetDefaultGravity();
 
 	isDashing = false;
 	FTimerHandle time;

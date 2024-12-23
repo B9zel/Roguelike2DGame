@@ -70,5 +70,4 @@ private:
 
 	class UNiagaraComponent* m_DashNiagaraComponent;
 
-
 };

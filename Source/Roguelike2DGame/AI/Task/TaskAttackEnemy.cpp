@@ -13,10 +13,19 @@ EBTNodeResult::Type UTaskAttackEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerC
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
     ABasePaperCharacter* character = Cast<ABasePaperCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-    if (character)
+    if (!character) return EBTNodeResult::Failed;
+
+    if (!character->endAnimAttack.Contains(this, "EndAttack"))
     {
-        character->OnAttack();
-        return EBTNodeResult::Succeeded;
+        character->endAnimAttack.AddDynamic(this, &UTaskAttackEnemy::EndAttack);
     }
-    return EBTNodeResult::Failed;
+
+    character->OnAttack();
+
+    return EBTNodeResult::InProgress;
+}
+
+void UTaskAttackEnemy::EndAttack()
+{
+    FinishExecute(true);
 }

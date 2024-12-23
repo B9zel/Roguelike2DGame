@@ -12,6 +12,7 @@
 
 
 class UInputAction;
+class UClimbSkillComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UDashSkillComponent;
@@ -74,8 +75,6 @@ public:
 	FName Jump;	
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	FName Dash;
-	UPROPERTY(EditAnywhere, Category = "Anim")
-	FName Death;
 };
 
 
@@ -107,15 +106,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	UManaComponent* GetManaComponent()				{ return manaComponent; }
 	UFUNCTION()	
-	float GetDefoultGravity()						{ return m_defoultGravity; }
+	float GetDefaultGravity()						{ return m_defaultGravity; }
+	UFUNCTION(BlueprintPure)
+	bool IsCurrentMove() const						{ return m_isCurrentMove; }
+	
+	UFUNCTION()
+	void PlayDashAnim();
 
 
 	UFUNCTION(BlueprintCallable)
 	void AddNewWeapon(const EWeaponType& typeWeapon, TSubclassOf<UBaseWeapon> newWeapon);
-
-public:
-
-	virtual void LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride) override;
 
 protected:
 
@@ -124,12 +124,13 @@ protected:
 	virtual void OnJumped_Implementation() override;
 	virtual void OnWalkingOffLedge_Implementation(const FVector& PreviousFloorImpactNormal, const FVector& PreviousFloorContactNormal, const FVector& PreviousLocation, float TimeDelta) override;
 	
-
+	
 	virtual void RightMove(const struct FInputActionInstance& instance);
 	virtual void OnAttack() override;
 	virtual void OnAttackHit() override;
 	virtual void OnDeath_Implementation(AActor* deadActor, AActor* Instigator) override;
 	virtual void OnEndAnimAttack() override;
+	virtual void Jump() override;
 
 	void StopAttack();
 
@@ -159,6 +160,8 @@ protected:
 	UDoublejumpSkillComponent* doubleJumpSkillComponent;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UManaComponent* manaComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UClimbSkillComponent* climbComponent;
 
 protected:
 
@@ -183,7 +186,8 @@ private:
 	IInteract* m_rightInteractArtifact;
 	IInteract* m_leftInteractArtifact;
 
-	float m_defoultGravity;
+	float m_defaultGravity;
+	bool m_isCurrentMove;
 };
 
 template<class UserClass>

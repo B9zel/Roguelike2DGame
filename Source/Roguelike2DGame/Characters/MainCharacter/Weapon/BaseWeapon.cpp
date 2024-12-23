@@ -70,7 +70,7 @@ void UBaseWeapon::StartAttack()
 
 void UBaseWeapon::StartAnimAttack()
 {
-	GetOwner()->PlayAnimation(GetAttackAnimation());
+	GetOwner()->PlayAnimation(GetNameAttackAnimation());
 }
 
 void UBaseWeapon::FinishReload()

@@ -37,6 +37,11 @@ void ABasePaperCharacter::BeginPlay()
 	gameMode->OnSpawnActor(this);
 }
 
+void ABasePaperCharacter::OnAttackHit()
+{
+	hitAttack.Broadcast();
+}
+
 void ABasePaperCharacter::OnReloadAttack()
 {
 	reloadAttack.Broadcast();
@@ -58,6 +63,12 @@ void ABasePaperCharacter::DisableCharacterMovement()
 	//m_bufferMovementMode = GetCharacterMovement()->MovementMode;
 	//GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->Deactivate();
+}
+
+void ABasePaperCharacter::ResetMove()
+{
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
 void ABasePaperCharacter::PlayAnimation(FName nameAnim)

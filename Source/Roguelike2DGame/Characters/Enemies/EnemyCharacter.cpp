@@ -23,6 +23,7 @@ void AEnemyCharacter::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
+
 	if (GetVelocity().X > 0)
 	{
 		SetActorRotation(FRotator(0, 0, 0));
